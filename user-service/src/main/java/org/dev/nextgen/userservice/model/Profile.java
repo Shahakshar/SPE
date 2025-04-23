@@ -13,7 +13,7 @@ public class Profile {
     @Column(name = "dr_name", nullable = false)
     private String name;
 
-    @Column(name = "dr_specialization", nullable = false)
+    @Column(name = "dr_description", nullable = false)
     private String description;
 
     @Column(name = "dr_image", nullable = false)
