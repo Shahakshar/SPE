@@ -25,6 +25,11 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
+    @GetMapping("/hello")
+    public String messageHello() {
+        return "Hello Guys";
+    }
+
     @PostMapping
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentRequest request) {
         try {
