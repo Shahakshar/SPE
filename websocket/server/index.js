@@ -1,0 +1,130 @@
+// server.js
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+const cors = require('cors');
+const Consul = require('consul');
+
+
+const app = express();
+app.use(cors());
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // In production, restrict this to your actual frontend URL
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+const consul = new Consul({
+  host: 'localhost',  // Docker host machine address
+  port: 8500
+});
+
+const SERVICE_ID = 'socket-service-' + Math.floor(Math.random() * 10000);
+const SERVICE_NAME = 'socket-service';
+const SERVICE_PORT = process.env.PORT || 7000;
+const SERVICE_HOST = '172.16.233.52'
+
+// Register with Consul
+function registerWithConsul() {
+  consul.agent.service.register({
+    id: SERVICE_ID,
+    name: SERVICE_NAME,
+    address: SERVICE_HOST,
+    port: SERVICE_PORT,
+    check: {
+      http: `http://${SERVICE_HOST}:${SERVICE_PORT}/health`,
+      interval: '10s',
+      timeout: '5s'
+    }
+  }, (err) => {
+    if (err) {
+      console.error('Failed to register with Consul:', err);
+      setTimeout(registerWithConsul, 5000);
+    } else {
+      console.log(`Successfully registered with Consul as ${SERVICE_NAME}`);
+    }
+  });
+}
+
+process.on('SIGINT', () => {
+  consul.agent.service.deregister(SERVICE_ID, () => {
+    console.log('Deregistered from Consul');
+    process.exit();
+  });
+});
+
+// Track rooms and their participants
+const rooms = {};
+
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  // Join room
+  socket.on('join-room', (roomId, userId) => {
+    console.log(`User ${userId} joining room ${roomId}`);
+    
+    // Check if room exists
+    if (!rooms[roomId]) {
+      rooms[roomId] = { users: [] };
+    }
+    
+    // Limit to 2 users per room
+    if (rooms[roomId].users.length >= 2) {
+      socket.emit('room-full');
+      return;
+    }
+
+    // Add user to room
+    socket.join(roomId);
+    rooms[roomId].users.push(userId);
+    socket.to(roomId).emit('user-connected', userId);
+    
+    // Notify if the room is now full
+    if (rooms[roomId].users.length === 2) {
+      io.to(roomId).emit('room-ready');
+    }
+
+    // Handle user disconnect
+    socket.on('disconnect', () => {
+      console.log(`User disconnected: ${socket.id}`);
+      if (rooms[roomId]) {
+        rooms[roomId].users = rooms[roomId].users.filter(id => id !== userId);
+        socket.to(roomId).emit('user-disconnected', userId);
+        
+        // Clean up empty rooms
+        if (rooms[roomId].users.length === 0) {
+          delete rooms[roomId];
+        }
+      }
+    });
+  });
+
+  // WebRTC signaling
+  socket.on('offer', (offer, roomId, fromUserId) => {
+    socket.to(roomId).emit('offer', offer, fromUserId);
+  });
+
+  socket.on('answer', (answer, roomId, fromUserId) => {
+    socket.to(roomId).emit('answer', answer, fromUserId);
+  });
+
+  socket.on('ice-candidate', (candidate, roomId, fromUserId) => {
+    socket.to(roomId).emit('ice-candidate', candidate, fromUserId);
+  });
+});
+
+const PORT = process.env.PORT || 7000;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Registering with Consul at http://${SERVICE_HOST}:${SERVICE_PORT}/health`);
+
+  registerWithConsul();
+});
