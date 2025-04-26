@@ -1,11 +1,11 @@
 package org.dev.nextgen.appointmentservice.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.dev.nextgen.appointmentservice.domain.AppointmentStatus;
-
 import java.time.LocalDateTime;
 
 @Data
@@ -72,4 +72,8 @@ public class Appointment {
 
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
+
+    @JsonManagedReference
+    @OneToOne(mappedBy = "appointment", cascade = CascadeType.ALL)
+    private MeetingRoom meetingRoom;
 }

@@ -19,10 +19,9 @@ public class AppointmentRequest {
     private String reason;
     private String notes;
     private double consultationFee;
-    private int duration; // in minutes
+    private int duration;
 
-    // Patient information
-    private Long patientId; // Optional: if user is registered
+    private Long patientId;
     private String patientName;
     private String patientEmail;
     private String patientPhone;

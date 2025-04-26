@@ -1,8 +1,10 @@
 package org.dev.nextgen.appointmentservice.service.implementation;
 
+import jakarta.transaction.Transactional;
 import org.dev.nextgen.appointmentservice.domain.AppointmentStatus;
 import org.dev.nextgen.appointmentservice.dto.AppointmentRequest;
 import org.dev.nextgen.appointmentservice.dto.ProfileDTO;
+import org.dev.nextgen.appointmentservice.model.MeetingRoom;
 import org.dev.nextgen.appointmentservice.model.Treatment;
 import org.dev.nextgen.appointmentservice.dto.UserDTO;
 import org.dev.nextgen.appointmentservice.model.Appointment;
@@ -10,6 +12,7 @@ import org.dev.nextgen.appointmentservice.model.DoctorReport;
 import org.dev.nextgen.appointmentservice.repository.AppointmentRepository;
 import org.dev.nextgen.appointmentservice.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.dev.nextgen.appointmentservice.service.MeetingRoomService;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,20 +26,19 @@ public class AppointmentServiceImplementation implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
 
+    private final MeetingRoomService meetingRoomService;
     @Override
+    @Transactional
     public Appointment createAppointment(AppointmentRequest request, UserDTO userDTO, ProfileDTO profileDTO, Treatment treatment) throws Exception {
         int appointmentDuration = treatment.getDuration();
 
         LocalDateTime appointmentStartTime = request.getStartTime();
         LocalDateTime appointmentEndTime = appointmentStartTime.plusMinutes(appointmentDuration);
 
-        // Check if time slot is available
         Boolean isSlotAvailable = isTimeSlotAvailable(profileDTO, appointmentStartTime, appointmentEndTime);
 
-        // Create the appointment
         Appointment newAppointment = new Appointment();
 
-        // Set patient information
         newAppointment.setPatientId(userDTO.getId() != null ? userDTO.getId() : 0L); // 0 for guest users
         newAppointment.setPatientName(userDTO.getName());
         newAppointment.setPatientEmail(userDTO.getEmail());
@@ -44,11 +46,9 @@ public class AppointmentServiceImplementation implements AppointmentService {
         newAppointment.setPatientAge(userDTO.getAge());
         newAppointment.setPatientGender(userDTO.getGender());
 
-        // Set doctor and service information
         newAppointment.setDoctorId(profileDTO.getId());
         newAppointment.setServiceId(treatment.getId());
 
-        // Set appointment details
         newAppointment.setStatus(AppointmentStatus.PENDING);
         newAppointment.setStartTime(appointmentStartTime);
         newAppointment.setEndTime(appointmentEndTime);
@@ -57,13 +57,12 @@ public class AppointmentServiceImplementation implements AppointmentService {
         newAppointment.setNotes(request.getNotes());
         newAppointment.setCreatedAt(LocalDateTime.now());
 
-        // Generate unique meeting room ID
-        String meetingRoomId = "DR-" + profileDTO.getId() + "-PT-" +
-                (userDTO.getId() != null ? userDTO.getId() : "GUEST") + "-" +
-                System.currentTimeMillis();
-        newAppointment.setMeetingRoomId(meetingRoomId);
+        Appointment savedAppointment = appointmentRepository.save(newAppointment);
 
-        return appointmentRepository.save(newAppointment);
+        MeetingRoom meetingRoom = meetingRoomService.createMeetingRoom(savedAppointment);
+
+        savedAppointment.setMeetingRoomId(meetingRoom.getRoomCode());
+        return appointmentRepository.save(savedAppointment);
     }
 
     private String generateMeetingRoomId(Long doctorId, Long patientId, LocalDateTime startTime) {
@@ -230,5 +229,11 @@ public class AppointmentServiceImplementation implements AppointmentService {
         report.setTotalRefunds(totalRefunds);
 
         return report;
+    }
+
+    public MeetingRoom getMeetingRoomForAppointment(Long appointmentId) throws Exception {
+        // First check if appointment exists
+        getAppointmentById(appointmentId);
+        return meetingRoomService.getMeetingRoomByAppointmentId(appointmentId);
     }
 }
