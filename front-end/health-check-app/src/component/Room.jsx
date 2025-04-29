@@ -5,7 +5,7 @@ import { VideoDisplay } from './VideoDisplay';
 import { StatusMessage } from './StatusMessage';
 import { RoomInfo } from './RoomInfo';
 
-const Room = ({ roomId, userId }) => {
+const Room = ({ roomId, userId, userName }) => {
   const {
     message,
     isConnected,
@@ -17,8 +17,9 @@ const Room = ({ roomId, userId }) => {
     endCall,
     micEnabled,
     cameraEnabled,
+    remoteUser,
     setMessage
-  } = useVideoChat(roomId, userId);
+  } = useVideoChat(roomId, userId, userName);
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
@@ -32,6 +33,8 @@ const Room = ({ roomId, userId }) => {
           remoteVideoRef={remoteVideoRef}
           micEnabled={micEnabled}
           cameraEnabled={cameraEnabled}
+          userName={userName}
+          remoteUser={remoteUser}
         />
         
         <RoomInfo roomId={roomId} />

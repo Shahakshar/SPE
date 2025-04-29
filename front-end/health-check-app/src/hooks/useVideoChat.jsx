@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-export function useVideoChat(roomId, userId) {
+export function useVideoChat(roomId, userId, userName) {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isRoomFull, setIsRoomFull] = useState(false);
@@ -9,20 +9,25 @@ export function useVideoChat(roomId, userId) {
   const [message, setMessage] = useState('Waiting for another participant...');
   const [micEnabled, setMicEnabled] = useState(true);
   const [cameraEnabled, setCameraEnabled] = useState(true);
+  const [remoteUser, setRemoteUser] = useState(null);
   
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
 
-  const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000';
+  // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:9000';
+  // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'ws://backend-service:7000/socket.io';
+  // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://192.168.49.2:30700/socket.io';
+  const SOCKET_SERVER_URL = window.location.origin;
 
   // Initialize socket connection
   useEffect(() => {
     const newSocket = io(SOCKET_SERVER_URL, {
-      reconnectionAttempts: 5,
+      path: '/socket.io',
+      reconnectionAttempts: 3,
       reconnectionDelay: 1000,
-      transports: ['websocket', 'polling'], // Try websocket first, fallback to polling
+      transports: ['websocket', 'polling'],
       withCredentials: true
     });
     setSocket(newSocket);
@@ -78,7 +83,8 @@ export function useVideoChat(roomId, userId) {
   };
 
   // Handle when another user connects
-  const handleUserConnected = async (newUserId) => {
+  const handleUserConnected = async (newUserId, userName) => {
+    console.log('User connected:', newUserId, userName);
     setRemoteUserId(newUserId);
     setMessage('Another participant joined. Setting up connection...');
     
@@ -105,6 +111,25 @@ export function useVideoChat(roomId, userId) {
       }
     }
   };
+
+  const handleUpdateList = (socketUserId, users) => {
+
+    // console.log('CurrentUser:', userId);
+    // console.log('SocketUser:', socketUserId);
+    // console.log('User list:', users);
+
+    const otherUser = users.find(user => user.userId !== userId);
+    if (otherUser) {
+      // console.log('Other user:', otherUser);
+      setRemoteUser(otherUser.newUserName);
+      setMessage(`Connected to ${otherUser.newUserName}`);
+    }
+    else {
+      setRemoteUser(null);
+      setMessage('Waiting for another participant...');
+    }
+    // console.log('Updated user list:', users);
+  }
 
   // Handle incoming WebRTC offer
   const handleOffer = async (offer, fromUserId) => {
@@ -152,6 +177,12 @@ export function useVideoChat(roomId, userId) {
   useEffect(() => {
     if (!socket) return;
 
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      console.error('Media devices API not available in this browser');
+      setMessage('Your browser does not support video calls. Please use Chrome, Firefox, or Safari.');
+      return;
+    }
+
     // Request camera and microphone access
     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
       .then((stream) => {
@@ -161,7 +192,7 @@ export function useVideoChat(roomId, userId) {
         }
         
         // Join room after getting media
-        socket.emit('join-room', roomId, userId);
+        socket.emit('join-room', roomId, userId, userName);
         
         // Configure WebRTC peer connection
         setupPeerConnection();
@@ -169,6 +200,7 @@ export function useVideoChat(roomId, userId) {
         // Handle socket events
         socket.on('user-connected', handleUserConnected);
         socket.on('user-disconnected', handleUserDisconnected);
+        socket.on('update-list', handleUpdateList);
         socket.on('offer', handleOffer);
         socket.on('answer', handleAnswer);
         socket.on('ice-candidate', handleIceCandidate);
@@ -188,6 +220,7 @@ export function useVideoChat(roomId, userId) {
       socket.off('ice-candidate');
       socket.off('room-full');
       socket.off('room-ready');
+      socket.off('update-list');
       
       // Clean up media streams
       if (localStreamRef.current) {
@@ -243,6 +276,7 @@ export function useVideoChat(roomId, userId) {
     endCall,
     micEnabled,
     cameraEnabled,
+    remoteUser,
     setMessage
   };
 }

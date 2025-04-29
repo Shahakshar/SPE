@@ -6,6 +6,7 @@ function App() {
   const [joined, setJoined] = useState(false);
   const [roomId, setRoomId] = useState('');
   const [userId] = useState(uuidv4());
+  const [userName, setUserName] = useState('');
 
   const handleJoinRoom = () => {
     if (!roomId.trim()) {
@@ -30,6 +31,13 @@ function App() {
               Enter an existing room ID to join a consultation, or leave it blank to create a new room.
             </p>
             <div className="space-y-4">
+            <input
+                type="text"
+                placeholder="Enter Your Name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              />
               <input
                 type="text"
                 placeholder="Enter room ID or leave blank to create"
@@ -46,7 +54,7 @@ function App() {
             </div>
           </div>
         ) : (
-          <Room roomId={roomId} userId={userId} />
+          <Room roomId={roomId} userId={userId} userName={userName}/>
         )}
       </div>
     </div>

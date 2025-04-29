@@ -1,15 +1,18 @@
 // server.js
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const cors = require('cors');
-const Consul = require('consul');
-
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import Consul from 'consul';
 
 const app = express();
 app.use(cors());
+app.use((req, res, next) => {
+  console.log('Headers:', req.headers);
+  next();
+});
 
-const server = http.createServer(app);
+const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*', // In production, restrict this to your actual frontend URL
@@ -61,15 +64,13 @@ process.on('SIGINT', () => {
   });
 });
 
-// Track rooms and their participants
-const rooms = {};
+const rooms = {}; // rooms -> { users: [{userId: , userName: }, {userId: , userName: }] }
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   // Join room
-  socket.on('join-room', (roomId, userId) => {
-    console.log(`User ${userId} joining room ${roomId}`);
+  socket.on('join-room', (roomId, userId, newUserName) => {
     
     // Check if room exists
     if (!rooms[roomId]) {
@@ -84,8 +85,12 @@ io.on('connection', (socket) => {
 
     // Add user to room
     socket.join(roomId);
-    rooms[roomId].users.push(userId);
+    rooms[roomId].users.push({userId, newUserName});
+
+    console.log(rooms, rooms[roomId].users);
+
     socket.to(roomId).emit('user-connected', userId);
+    io.to(roomId).emit('update-list', userId, rooms[roomId].users);
     
     // Notify if the room is now full
     if (rooms[roomId].users.length === 2) {
@@ -96,7 +101,9 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
       console.log(`User disconnected: ${socket.id}`);
       if (rooms[roomId]) {
-        rooms[roomId].users = rooms[roomId].users.filter(id => id !== userId);
+        rooms[roomId].users = rooms[roomId].users.filter(user => user.userId !== userId);
+        console.log(rooms)
+        console.log(rooms[roomId].users);
         socket.to(roomId).emit('user-disconnected', userId);
         
         // Clean up empty rooms
@@ -124,7 +131,7 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 7000;
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Registering with Consul at http://${SERVICE_HOST}:${SERVICE_PORT}/health`);
+  // console.log(`Registering with Consul at http://${SERVICE_HOST}:${SERVICE_PORT}/health`);
 
-  registerWithConsul();
+  // registerWithConsul();
 });

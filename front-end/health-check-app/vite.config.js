@@ -13,9 +13,6 @@ export default defineConfig({
     hmr: {
       host: '0.0.0.0',
     },
-    proxy: {
-      
-    },
     cors: true,
     allowedHosts: [
       'localhost', 
@@ -23,7 +20,14 @@ export default defineConfig({
       '3ce2-2406-7400-94-cd72-b808-694b-b2b0-1e44.ngrok-free.app',
       '*.ngrok-free.app',
       '*.ngrok.io'
-    ]
+    ],
+    proxy: {
+      '/api': {
+        target: 'http://localhost:80',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
+    }
   },
   preview: {
     host: '0.0.0.0',
