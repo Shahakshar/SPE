@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*', // In production, restrict this to your actual frontend URL
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: true
   }

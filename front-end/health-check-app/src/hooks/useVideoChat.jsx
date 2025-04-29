@@ -1,7 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
 export function useVideoChat(roomId, userId, userName) {
+
+  const navigate = useNavigate();
+
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isRoomFull, setIsRoomFull] = useState(false);
@@ -10,13 +14,13 @@ export function useVideoChat(roomId, userId, userName) {
   const [micEnabled, setMicEnabled] = useState(true);
   const [cameraEnabled, setCameraEnabled] = useState(true);
   const [remoteUser, setRemoteUser] = useState(null);
-  
+
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
 
-  // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:9000';
+  // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000';
   // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'ws://backend-service:7000/socket.io';
   // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://192.168.49.2:30700/socket.io';
   const SOCKET_SERVER_URL = window.location.origin;
@@ -45,31 +49,31 @@ export function useVideoChat(roomId, userId, userName) {
         { urls: 'stun:stun1.l.google.com:19302' }
       ]
     };
-    
+
     const peerConnection = new RTCPeerConnection(configuration);
     peerConnectionRef.current = peerConnection;
-    
+
     // Add local tracks to peer connection
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach(track => {
         peerConnection.addTrack(track, localStreamRef.current);
       });
     }
-    
+
     // Handle ICE candidates
     peerConnection.onicecandidate = (event) => {
       if (event.candidate && socket) {
         socket.emit('ice-candidate', event.candidate, roomId, userId);
       }
     };
-    
+
     // Handle incoming tracks (remote stream)
     peerConnection.ontrack = (event) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
       }
     };
-    
+
     // Connection state changes
     peerConnection.onconnectionstatechange = (event) => {
       if (peerConnection.connectionState === 'connected') {
@@ -87,7 +91,7 @@ export function useVideoChat(roomId, userId, userName) {
     console.log('User connected:', newUserId, userName);
     setRemoteUserId(newUserId);
     setMessage('Another participant joined. Setting up connection...');
-    
+
     // Create and send offer
     try {
       const offer = await peerConnectionRef.current.createOffer();
@@ -104,7 +108,7 @@ export function useVideoChat(roomId, userId, userName) {
       setRemoteUserId(null);
       setIsConnected(false);
       setMessage('The other participant left the consultation.');
-      
+
       // Reset remote video
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = null;
@@ -190,13 +194,13 @@ export function useVideoChat(roomId, userId, userName) {
         if (localVideoRef.current) {
           localVideoRef.current.srcObject = stream;
         }
-        
+
         // Join room after getting media
         socket.emit('join-room', roomId, userId, userName);
-        
+
         // Configure WebRTC peer connection
         setupPeerConnection();
-        
+
         // Handle socket events
         socket.on('user-connected', handleUserConnected);
         socket.on('user-disconnected', handleUserDisconnected);
@@ -221,12 +225,12 @@ export function useVideoChat(roomId, userId, userName) {
       socket.off('room-full');
       socket.off('room-ready');
       socket.off('update-list');
-      
+
       // Clean up media streams
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach(track => track.stop());
       }
-      
+
       // Close peer connection
       if (peerConnectionRef.current) {
         peerConnectionRef.current.close();
@@ -262,7 +266,10 @@ export function useVideoChat(roomId, userId, userName) {
   };
 
   const endCall = () => {
-    window.location.reload();
+    if (socket) {
+      socket.emit('leave-room', roomId, userId);
+    }
+    navigate('/appointment', { replace: true });
   };
 
   return {

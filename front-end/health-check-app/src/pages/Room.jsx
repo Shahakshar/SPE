@@ -1,11 +1,14 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { useVideoChat } from '../hooks/useVideoChat';
-import { VideoControls } from './VideoControls';
-import { VideoDisplay } from './VideoDisplay';
-import { StatusMessage } from './StatusMessage';
-import { RoomInfo } from './RoomInfo';
+import { VideoControls } from '../component/VideoControls';
+import { VideoDisplay } from '../component/VideoDisplay';
+import { StatusMessage } from '../component/StatusMessage';
+import { RoomInfo } from '../component/RoomInfo';
 
-const Room = ({ roomId, userId, userName }) => {
+const Room = () => {
+
+  const { roomId, userId, userName } = useParams();
   const {
     message,
     isConnected,

@@ -12,12 +12,14 @@ export default defineConfig({
     port: 3000,
     hmr: {
       host: '0.0.0.0',
+      clientPort: 443, 
+      protocol: 'wss' 
     },
     cors: true,
     allowedHosts: [
+      'd5c8-2406-7400-94-c711-d3b9-2bb6-1369-f9.ngrok-free.app',
       'localhost', 
       '127.0.0.1',
-      '3ce2-2406-7400-94-cd72-b808-694b-b2b0-1e44.ngrok-free.app',
       '*.ngrok-free.app',
       '*.ngrok.io'
     ],
