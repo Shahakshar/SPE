@@ -1,0 +1,56 @@
+# services:
+#   backend:
+#     build:
+#       context: ./websocket
+#       dockerfile: Dockerfile
+#     container_name: backend
+#     ports:
+#       - "7000:7000"
+
+#   frontend:
+#     build:
+#       context: ./front-end/health-check-app
+#       dockerfile: Dockerfile
+#     container_name: frontend
+#     # command: ["echo", "Frontend build ready."]
+#     ports:
+#       - "80:80"
+#     depends_on:
+#       - backend-nginx
+
+#   backend-nginx:
+#     build:
+#       context: ./backend-nginx
+#       dockerfile: Dockerfile
+#     container_name: backend-nginx
+#     ports:
+#       - "9000:9000"
+#     depends_on:
+#       - backend
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql-development
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "1500:80"
+
+volumes:
+  mysql-data:
+    driver: local
