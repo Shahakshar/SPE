@@ -3,7 +3,6 @@ package org.dev.nextgen.appointmentservice.controller;
 import lombok.RequiredArgsConstructor;
 import org.dev.nextgen.appointmentservice.model.Appointment;
 import org.dev.nextgen.appointmentservice.model.MeetingRoom;
-import org.dev.nextgen.appointmentservice.repository.AppointmentRepository;
 import org.dev.nextgen.appointmentservice.service.AppointmentService;
 import org.dev.nextgen.appointmentservice.service.MeetingRoomService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -74,9 +73,7 @@ public class FutureAppointmentsController {
         return new ResponseEntity<>(appointments, HttpStatus.OK);
     }
 
-    /**
-     * Helper method to load meeting rooms for appointments
-     */
+
     private void loadMeetingRoomsForAppointments(List<Appointment> appointments) {
         for (Appointment appointment : appointments) {
             try {

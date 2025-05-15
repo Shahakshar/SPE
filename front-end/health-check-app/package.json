@@ -13,14 +13,19 @@
   "dependencies": {
     "@heroicons/react": "^2.2.0",
     "@reduxjs/toolkit": "^2.7.0",
-    "@tailwindcss/vite": "^4.1.4",
+    "@tailwindcss/vite": "^4.1.6",
+    "axios": "^1.9.0",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.510.0",
     "react": "^19.0.0",
+    "react-calendar": "^5.1.0",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.5.3",
     "simple-peer": "^9.11.1",
     "socket.io-client": "^4.8.1",
-    "tailwindcss": "^4.1.4",
+    "tailwindcss": "^4.1.6",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

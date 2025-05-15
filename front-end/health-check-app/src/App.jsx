@@ -1,15 +1,82 @@
 // import { useState } from 'react';
 // import { v4 as uuidv4 } from 'uuid';
 // import Room from './component/Room';
-import Body from './component/appRoute.jsx';
-import './App.css';
+// import Body from './component/appRoute.jsx';
+// import BookingForm from './component/hospital-booking/BookingForm.jsx'
+// import './App.css';
+// function App() {
+//   return (
+//       // <Body/>
+
+//   // <div className="min-h-screen bg-gray-50 py-8">
+//     <BookingForm/>
+//   // </div>
+
+//   );
+// }
+
+// export default App;
+
+
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import BookAppointment from './pages/BookAppointment';
+import AppointmentListServ from './component/AppointmentListServ';
+import AppointmentDetail from './component/AppointmentDetail';
+import Home from './pages/Home';
+import Doctors from './pages/Doctors'; 
+import Register from './pages/Register';
+
+
+    // <Router>
+
+    //   <Routes>
+    //     <Route path="/" element={<Home />} />
+    //     <Route path="/book/:id" element={<BookAppointment />} />
+    //     <Route path="/doctors" element={<Doctors />} /> 
+    //     <Route path="/Register" element={<Register />} />
+
+    //   </Routes> 
+
+    // </Router>
+
+
 function App() {
   return (
-      <Body />
+
+    <Router>
+      {/* <div className="min-h-screen bg-gray-50"> */}
+        <Routes>
+           <Route path="/" element={<Home />} />
+           <Route path="/book/:id" element={<BookAppointment />} />
+           <Route path="/doctors" element={<Doctors />} /> 
+           <Route path="/Register" element={<Register />} />
+
+          <Route path="/my-appointments" element={<AppointmentListServ />} />
+          <Route path="/appointments/:id" element={<AppointmentDetail />} />
+        </Routes>
+      {/* </div> */}
+    </Router>
+
   );
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // const [joined, setJoined] = useState(false);
 // const [roomId, setRoomId] = useState('');
