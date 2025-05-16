@@ -131,6 +131,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.findOne(Example.of(example));
     }
 
+    @Override
+    public List<String> getAllSpecializations() {
+        return userRepository.findAllSpecializations();
+    }
+
     /**
      * Validates doctor-specific data
      * @param doctor The doctor user to validate
@@ -183,4 +188,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Patient phone cannot be empty");
         }
     }
+
+
 }

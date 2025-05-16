@@ -1,10 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../utils/slices/authSlice';
 
 const Header = () => {
-    //   const { user } = useSelector((state) => state.auth);
-    //   const dispatch = useDispatch();
+
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const user = {
         name: "John Doe",
@@ -18,8 +21,11 @@ const Header = () => {
     const profileRef = useRef(null);
 
     const handleLogout = () => {
-        // dispatch({ type: 'LOGOUT' });
+        // Perform logout logic here
+        dispatch(logout());
+        localStorage.removeItem('user');
         setProfileMenuOpen(false);
+        navigate('/');
     };
 
     const handleClickOutside = (e) => {
@@ -45,8 +51,8 @@ const Header = () => {
                 >
                     ☰
                 </button>
-                <Link to="/" className="text-xl font-bold">
-                    MyApp
+                <Link to="/dashboard" className="text-xl font-bold">
+                    Health Check
                 </Link>
 
                 <div className="hidden md:flex space-x-6 items-center">

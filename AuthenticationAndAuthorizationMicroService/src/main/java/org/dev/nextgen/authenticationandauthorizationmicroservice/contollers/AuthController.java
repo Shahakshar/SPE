@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -24,11 +25,11 @@ public class AuthController {
         return new BaseResponse("Welcome to Auth Api", "200", null, null);
     }
 
-    @GetMapping("/email/{email}")
-    public ResponseEntity<BaseResponse> getUser(@PathVariable String email) {
-        BaseResponse baseResponse = userService.getUserByEmail(email);
-        return ResponseEntity.status(HttpStatusCode.valueOf(Integer.parseInt(baseResponse.getStatus()))).body(baseResponse);
-    }
+//    @GetMapping("/email/{email}")
+//    public ResponseEntity<BaseResponse> getUser(@PathVariable String email) {
+//        BaseResponse baseResponse = userService.getUserByEmail(email);
+//        return ResponseEntity.status(HttpStatusCode.valueOf(Integer.parseInt(baseResponse.getStatus()))).body(baseResponse);
+//    }
 
     @PostMapping("/register")
     public ResponseEntity<BaseResponse> register(@RequestBody RegisterRequest request) {

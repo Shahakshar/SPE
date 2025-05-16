@@ -63,4 +63,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query("SELECT u FROM User u WHERE u.role = 'DOCTOR' AND u.hourlyRate <= :rate")
     List<User> findDoctorsByMaxHourlyRate(@Param("rate") Double rate);
+
+    @Query("SELECT DISTINCT u.expertise FROM User u WHERE u.role = 'DOCTOR'")
+    List<String> findAllSpecializations();
 }

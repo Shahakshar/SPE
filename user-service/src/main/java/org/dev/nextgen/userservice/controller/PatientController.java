@@ -1,5 +1,6 @@
 package org.dev.nextgen.userservice.controller;
 
+import org.dev.nextgen.userservice.model.BaseResponse;
 import org.dev.nextgen.userservice.model.User;
 import org.dev.nextgen.userservice.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping("api/v1/patients")
+@RequestMapping("/api/v1/patients")
 @RestController
 public class PatientController {
 
@@ -25,37 +26,49 @@ public class PatientController {
         return "Welcome to the Patient API";
     }
 
-//    @GetMapping("/doctor-list")
-//    public ResponseEntity<List<User>> getAllDoctors() {
-//        List<User> doctors = userService.getAllDoctors();
-//        return ResponseEntity.ok(doctors);
-//    }
+    @GetMapping("/doctor-list")
+    public ResponseEntity<BaseResponse> getAllDoctors() {
+        List<User> doctors = userService.getAllDoctors();
+        BaseResponse response = new BaseResponse("200", "Success", null, doctors);
+        return ResponseEntity.ok(response);
+    }
 
     @GetMapping("/doctors/available")
-    public ResponseEntity<List<User>> getAvailableDoctors() {
+    public ResponseEntity<BaseResponse> getAvailableDoctors() {
         List<User> availableDoctors = userService.findAvailableDoctors();
-        return ResponseEntity.ok(availableDoctors);
+        BaseResponse response = new BaseResponse("200", "Success", null, availableDoctors);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/specialization-list")
+    public ResponseEntity<BaseResponse> getAllSpecializations() {
+        List<String> specializations = userService.getAllSpecializations();
+        BaseResponse response = new BaseResponse("200", "Success", null, specializations);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/doctors/specialization/{specialization}")
-    public ResponseEntity<List<User>> getDoctorsBySpecialization(
+    public ResponseEntity<BaseResponse> getDoctorsBySpecialization(
             @PathVariable String specialization) {
         List<User> doctors = userService.findDoctorsBySpecialization(specialization);
-        return ResponseEntity.ok(doctors);
+        BaseResponse response = new BaseResponse("200", "Success", null, doctors);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/doctors/rating/{minRating}")
-    public ResponseEntity<List<User>> getDoctorsByMinimumRating(
+    public ResponseEntity<BaseResponse> getDoctorsByMinimumRating(
             @PathVariable Double minRating) {
         List<User> doctors = userService.findDoctorsByMinimumRating(minRating);
-        return ResponseEntity.ok(doctors);
+        BaseResponse response = new BaseResponse("200", "Success", null, doctors);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/doctors/rate/{maxRate}")
-    public ResponseEntity<List<User>> getDoctorsByMaxHourlyRate(
+    public ResponseEntity<BaseResponse> getDoctorsByMaxHourlyRate(
             @PathVariable Double maxRate) {
         List<User> doctors = userService.findDoctorsByMaxHourlyRate(maxRate);
-        return ResponseEntity.ok(doctors);
+        BaseResponse response = new BaseResponse("200", "Success", null, doctors);
+        return ResponseEntity.ok(response);
     }
 
 }
