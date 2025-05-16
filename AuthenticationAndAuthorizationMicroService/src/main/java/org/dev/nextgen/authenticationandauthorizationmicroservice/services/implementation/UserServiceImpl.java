@@ -55,10 +55,10 @@ public class UserServiceImpl implements UserService {
         } else {
             user.setDescription(null);
             user.setImageUrl(null);
-            user.setExpertise(null);
-            user.setAvailable(null);
-            user.setRating(null);
-            user.setHourlyRate(null);
+            user.setExpertise("");
+            user.setAvailable(false);
+            user.setRating(0.0);
+            user.setHourlyRate(0.0);
         }
 
         try {
@@ -89,9 +89,10 @@ public class UserServiceImpl implements UserService {
             return new BaseResponse("Invalid email or password", "401", "Unauthorized", null);
         }
 
-        String token = jwtUtil.generateToken(userRepository.findByEmail(email).get());
+        User user = userRepository.findByEmail(email).get();
+        String token = jwtUtil.generateToken(user);
 
-        LoginResponse loginResponse = new LoginResponse(token);
+        LoginResponse loginResponse = new LoginResponse(token, user);
 
         return new BaseResponse("Login successful", "200", "OK", loginResponse);
     }

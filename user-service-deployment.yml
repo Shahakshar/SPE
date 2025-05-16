@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: spe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: akdev6298/user-service:0.0.1
+          ports:
+            - containerPort: 6001
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: user-service
+            - name: SERVER_PORT
+              value: "6001"
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql.spe.svc.cluster.local:3306/SPE?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: com.mysql.cj.jdbc.Driver
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: SPRING_JPA_SHOW_SQL
+              value: "true"
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+              value: "true"
+            - name: SPRING_JPA_GENERATE_DDL
+              value: "true"
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              value: org.hibernate.dialect.MySQLDialect
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: health,info
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: spe
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: 6001
+      targetPort: 6001
+  type: ClusterIP

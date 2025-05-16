@@ -4,24 +4,27 @@ import Layout from '../component/Layout';
 import Dashboard from '../pages/Dashboard';
 import Appointment from '../pages/Appointment';
 import Room from '../pages/Room';
+import Login from '../pages/Login';
+import ProtectRoute from './ProtectRoute';
 
 const appRoute = createBrowserRouter([
     {
         path: "/",
-        element: <Layout />,
+        element: <Login />,
+    },
+    {
+        path: "/",
+        element: <ProtectRoute />,
         children: [
             {
-                index: true,
-                element: <Dashboard />,
+                path: "/",
+                element: <Layout />,
+                children: [
+                    { path: 'dashboard', element: <Dashboard /> },
+                    { path: 'appointment', element: <Appointment /> },
+                    { path: 'room/:roomId/:userId/:userName', element: <Room /> },
+                ]
             },
-            {
-                path: "appointment",
-                element: <Appointment />,
-            },
-            {
-                path: "room/:roomId/:userId/:userName",
-                element: <Room />,
-            }
         ]
     }
 ]);

@@ -110,4 +110,7 @@ public interface UserService {
      * @return Optional containing the user if found
      */
     Optional<User> findUserByEmail(String email);
+
+
+    List<String> getAllSpecializations();
 }

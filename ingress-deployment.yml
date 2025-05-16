@@ -1,0 +1,78 @@
+#apiVersion: networking.k8s.io/v1
+#kind: Ingress
+#metadata:
+#  name: spe-ingress
+#  namespace: spe
+#spec:
+#  ingressClassName: nginx
+#  rules:
+#    - host: spe.local
+#      http:
+#        paths:
+#          - path: /
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: health-check-app
+#                port:
+#                  number: 80
+#          - path: /api/
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: gateway-service
+#                port:
+#                  number: 80
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: gateway-ingress
+  namespace: spe
+spec:
+  rules:
+    - host: gateway.local
+      http:
+        paths:
+          - path: /api/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 80
+#          - path: /api/auth/register
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: gateway-service
+#                port:
+#                  number: 80
+#          - path: /api/auth/login
+#            pathType: Prefix
+#            backend:
+#              service:
+#                name: gateway-service
+#                port:
+#                  number: 80
+          - path: /api/v1/doctors
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 80
+          - path: /api/v1/patients
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 80
+          - path: /api/v1/users
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 80
