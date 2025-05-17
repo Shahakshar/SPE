@@ -5,6 +5,7 @@ import Dashboard from '../pages/Dashboard';
 import Appointment from '../pages/Appointment';
 import Room from '../pages/Room';
 import Login from '../pages/Login';
+import UserProfile from '../pages/UserProfile';
 import ProtectRoute from './ProtectRoute';
 
 const appRoute = createBrowserRouter([
@@ -23,6 +24,7 @@ const appRoute = createBrowserRouter([
                     { path: 'dashboard', element: <Dashboard /> },
                     { path: 'appointment', element: <Appointment /> },
                     { path: 'room/:roomId/:userId/:userName', element: <Room /> },
+                    { path: 'profile', element: <UserProfile />},
                 ]
             },
         ]

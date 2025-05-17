@@ -113,4 +113,6 @@ public interface UserService {
 
 
     List<String> getAllSpecializations();
+
+    List<User> filterDoctors(String specialization, Double minRating, Double rate, Boolean available);
 }

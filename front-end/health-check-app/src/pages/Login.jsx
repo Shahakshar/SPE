@@ -1,15 +1,22 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../utils/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const LoginRegister = () => {
 
     const dispatch = useDispatch();
+    const { user } = useSelector((state) => state.auth);
     const [isLogin, setIsLogin] = useState(true);
     const [role, setRole] = useState('');
     const [form, setForm] = useState({});
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user) {
+          navigate("/dashboard");
+        }
+      }, [user, navigate]);
 
     const handleToggle = () => {
         setIsLogin(!isLogin);

@@ -1,13 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 
 const Appointment = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+
+  useEffect(() => {
+      const storedUser = localStorage.getItem("user");
+      console.log("Stored User:", storedUser);
+      if (storedUser) {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser.user);
+      }
+    }, []);
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center h-screen text-xl font-semibold">
+        Loading profile...
+      </div>
+    );
+  }
 
   const handleJoinRoom = () => {
     const roomId = '12345';
-    const userId = 'u001';
-    const userName = 'JohnDoe';
+    const userId = user.id;
+    const userName = user.name;
 
     navigate(`/room/${roomId}/${userId}/${userName}`);
   };

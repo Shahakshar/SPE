@@ -1,5 +1,11 @@
 package org.dev.nextgen.userservice.service.implementation;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.dev.nextgen.userservice.model.User;
 import org.dev.nextgen.userservice.repository.UserRepository;
 import org.dev.nextgen.userservice.service.UserService;
@@ -9,6 +15,7 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,10 +24,12 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final EntityManager entityManager;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, EntityManager entityManager) {
         this.userRepository = userRepository;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -136,6 +145,33 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAllSpecializations();
     }
 
+    @Override
+    public List<User> filterDoctors(String specialization, Double minRating, Double rate, Boolean available) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<User> root = cq.from(User.class);
+
+        List<Predicate> predicates = new ArrayList<>();
+        predicates.add(cb.equal(root.get("role"), "DOCTOR"));
+
+        if (specialization != null && !specialization.isEmpty())
+            predicates.add(cb.equal(root.get("expertise"), specialization));
+
+        if (minRating != null)
+            predicates.add(cb.greaterThanOrEqualTo(root.get("rating"), minRating));
+
+        if (rate != null)
+            predicates.add(cb.greaterThanOrEqualTo(root.get("hourlyRate"), rate));
+
+        if (available != null)
+            predicates.add(cb.equal(root.get("available"), available));
+
+        cq.where(cb.and(predicates.toArray(new Predicate[0])));
+        return entityManager.createQuery(cq).getResultList();
+    }
+
+
+
     /**
      * Validates doctor-specific data
      * @param doctor The doctor user to validate
@@ -188,6 +224,5 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Patient phone cannot be empty");
         }
     }
-
 
 }
