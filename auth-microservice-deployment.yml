@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: akdev6298/authenticationandauthorizationmicroservice:0.0.2
+          image: akdev6298/authenticationandauthorizationmicroservice:0.0.4
           ports:
             - containerPort: 3001
           env:

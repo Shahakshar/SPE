@@ -20,10 +20,10 @@ export function useVideoChat(roomId, userId, userName) {
   const peerConnectionRef = useRef(null);
   const localStreamRef = useRef(null);
 
-  // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000';
+  const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7000';
   // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'ws://backend-service:7000/socket.io';
   // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://192.168.49.2:30700/socket.io';
-  const SOCKET_SERVER_URL = window.location.origin;
+  // const SOCKET_SERVER_URL = window.location.origin;
 
   // Initialize socket connection
   useEffect(() => {

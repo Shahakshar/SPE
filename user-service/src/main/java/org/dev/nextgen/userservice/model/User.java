@@ -1,5 +1,6 @@
 package org.dev.nextgen.userservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -60,7 +61,7 @@ public class User {
     @Column(name = "dr_hourly_rate", nullable = false)
     private Double hourlyRate;
 
-    @Transient
+    @JsonIgnore
     @Column(name = "password", nullable = false)
     private String password;
 

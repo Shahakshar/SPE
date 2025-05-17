@@ -1,10 +1,16 @@
 import React from 'react';
 
-const DoctorCard = ({ doctor }) => {
+const DoctorCard = ({ doctor, onBook }) => {
+    const isAvailable = doctor.available;
+
     return (
-        <div className="bg-white shadow-xl rounded-2xl overflow-hidden hover:scale-105 transition-all">
+        <div
+            className={`relative bg-white shadow-xl rounded-2xl overflow-hidden transition-all transform ${
+                isAvailable ? 'hover:scale-105' : 'opacity-50 blur-sm pointer-events-none'
+            }`}
+        >
             <img
-                src={doctor.imageUrl} // adjust to your backend
+                src={doctor.imageUrl}
                 alt={doctor.name}
                 className="w-full h-48 object-cover"
             />
@@ -19,6 +25,19 @@ const DoctorCard = ({ doctor }) => {
                 <div className="text-sm text-gray-700 mt-2">
                     <p><strong>Email:</strong> {doctor.email}</p>
                     <p><strong>Phone:</strong> {doctor.phone}</p>
+                </div>
+                <div className="mt-4">
+                    <button
+                        onClick={() => onBook(doctor)}
+                        disabled={!isAvailable}
+                        className={`w-full py-2 px-4 rounded-lg font-semibold text-white transition ${
+                            isAvailable
+                                ? 'bg-blue-600 hover:bg-blue-700'
+                                : 'bg-gray-400 cursor-not-allowed'
+                        }`}
+                    >
+                        {isAvailable ? 'Book Now' : 'Not Available'}
+                    </button>
                 </div>
             </div>
         </div>
