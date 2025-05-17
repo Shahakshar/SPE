@@ -6,14 +6,6 @@ pipeline {
         DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
         DOCKERHUB_PASSWORD = "${DOCKERHUB_CREDENTIALS_PSW}"
         IMAGE_TAG = "latest"
-        SERVICES = [
-            'appointment-service',
-            'AuthenticationAndAuthorizationMicroService',
-            'gateway-service',
-            'user-service',
-            'websocket',
-            'front-end'
-        ]
     }
 
     stages {
@@ -27,6 +19,15 @@ pipeline {
         stage('Build Microservices') {
             steps {
                 script {
+                    def SERVICES = [
+                        'appointment-service',
+                        'AuthenticationAndAuthorizationMicroService',
+                        'gateway-service',
+                        'user-service',
+                        'websocket',
+                        'front-end'
+                    ]
+
                     SERVICES.each { service ->
                         echo "Running build step for ${service}..."
 
