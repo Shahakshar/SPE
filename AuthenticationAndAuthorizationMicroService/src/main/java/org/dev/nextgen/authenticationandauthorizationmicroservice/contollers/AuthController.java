@@ -4,13 +4,10 @@ import org.dev.nextgen.authenticationandauthorizationmicroservice.models.BaseRes
 import org.dev.nextgen.authenticationandauthorizationmicroservice.models.LoginRequest;
 import org.dev.nextgen.authenticationandauthorizationmicroservice.models.RegisterRequest;
 import org.dev.nextgen.authenticationandauthorizationmicroservice.services.UserService;
-import org.dev.nextgen.authenticationandauthorizationmicroservice.services.implementation.UserServiceImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
