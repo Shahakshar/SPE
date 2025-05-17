@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        DOCKERHUB_USERNAME = "${DOCKERHUB_CREDENTIALS_USR}"
-        DOCKERHUB_PASSWORD = "${DOCKERHUB_CREDENTIALS_PSW}"
+        DOCKERHUB_USERNAME = DOCKERHUB_CREDENTIALS_USR
+        DOCKERHUB_PASSWORD = DOCKERHUB_CREDENTIALS_PSW
         IMAGE_TAG = "latest"
     }
 
@@ -13,6 +13,25 @@ pipeline {
             steps {
                 echo 'Checking out source code...'
                 checkout scm
+            }
+        }
+
+        stage('Prepare') {
+            steps {
+                script {
+                    // Services that use Maven wrapper and need chmod +x
+                    def mavenServices = [
+                        'appointment-service',
+                        'AuthenticationAndAuthorizationMicroService',
+                        'gateway-service',
+                        'user-service'
+                    ]
+
+                    mavenServices.each { service ->
+                        echo "Setting executable permission on mvnw for ${service}"
+                        sh "chmod +x ${service}/mvnw"
+                    }
+                }
             }
         }
 
@@ -31,14 +50,13 @@ pipeline {
                     SERVICES.each { service ->
                         echo "Running build step for ${service}..."
 
-                        // Customize this if services have a specific build process (e.g., Maven, npm, etc.)
                         def buildScript = ''
                         if (service == 'front-end') {
                             buildScript = "cd ${service} && npm install && npm run build"
                         } else if (service == 'websocket') {
                             buildScript = "cd ${service} && npm install"
                         } else {
-                            // assuming Java-based microservices use Maven
+                            // Maven-based microservices
                             buildScript = "cd ${service} && ./mvnw clean package -DskipTests"
                         }
 
@@ -51,10 +69,18 @@ pipeline {
         stage('Build Docker Images') {
             steps {
                 script {
+                    def SERVICES = [
+                        'appointment-service',
+                        'AuthenticationAndAuthorizationMicroService',
+                        'gateway-service',
+                        'user-service',
+                        'websocket',
+                        'front-end'
+                    ]
+
                     SERVICES.each { service ->
                         def imageName = "${DOCKERHUB_USERNAME}/${service.toLowerCase()}"
                         echo "Building Docker image for ${service}..."
-
                         sh "docker build -t ${imageName}:${IMAGE_TAG} ${service}"
                     }
                 }
@@ -64,12 +90,21 @@ pipeline {
         stage('Push Docker Images') {
             steps {
                 script {
-                    sh 'echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin'
+                    // Login to Docker Hub
+                    sh "echo ${DOCKERHUB_PASSWORD} | docker login -u ${DOCKERHUB_USERNAME} --password-stdin"
+
+                    def SERVICES = [
+                        'appointment-service',
+                        'AuthenticationAndAuthorizationMicroService',
+                        'gateway-service',
+                        'user-service',
+                        'websocket',
+                        'front-end'
+                    ]
 
                     SERVICES.each { service ->
                         def imageName = "${DOCKERHUB_USERNAME}/${service.toLowerCase()}"
                         echo "Pushing ${imageName}:${IMAGE_TAG} to Docker Hub..."
-
                         sh "docker push ${imageName}:${IMAGE_TAG}"
                     }
                 }
