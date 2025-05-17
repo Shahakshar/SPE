@@ -3,7 +3,6 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-import Consul from 'consul';
 
 const app = express();
 app.use(cors());
@@ -23,45 +22,6 @@ const io = new Server(server, {
 
 app.get('/health', (req, res) => {
   res.status(200).send('OK');
-});
-
-const consul = new Consul({
-  host: 'localhost',  // Docker host machine address
-  port: 8500
-});
-
-const SERVICE_ID = 'socket-service-' + Math.floor(Math.random() * 10000);
-const SERVICE_NAME = 'socket-service';
-const SERVICE_PORT = process.env.PORT || 7000;
-const SERVICE_HOST = '172.16.233.52'
-
-// Register with Consul
-function registerWithConsul() {
-  consul.agent.service.register({
-    id: SERVICE_ID,
-    name: SERVICE_NAME,
-    address: SERVICE_HOST,
-    port: SERVICE_PORT,
-    check: {
-      http: `http://${SERVICE_HOST}:${SERVICE_PORT}/health`,
-      interval: '10s',
-      timeout: '5s'
-    }
-  }, (err) => {
-    if (err) {
-      console.error('Failed to register with Consul:', err);
-      setTimeout(registerWithConsul, 5000);
-    } else {
-      console.log(`Successfully registered with Consul as ${SERVICE_NAME}`);
-    }
-  });
-}
-
-process.on('SIGINT', () => {
-  consul.agent.service.deregister(SERVICE_ID, () => {
-    console.log('Deregistered from Consul');
-    process.exit();
-  });
 });
 
 const rooms = {}; // rooms -> { users: [{userId: , userName: }, {userId: , userName: }] }

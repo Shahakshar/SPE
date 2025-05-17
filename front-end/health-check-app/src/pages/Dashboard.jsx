@@ -7,16 +7,6 @@ const Dashboard = () => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     
-
-    // useEffect(() => {
-    //     const storedUser = localStorage.getItem("user");
-    //     // console.log("Stored User:", storedUser);
-    //     if (storedUser) {
-    //         const parsedUser = JSON.parse(storedUser);
-    //         setUser(parsedUser.user || null);
-    //         setToken(parsedUser.token || null);
-    //     }
-    // }, []);
     const [originalDoctorsList, setOriginalDoctorsList] = useState([]);
     const [filteredDoctorsList, setFilteredDoctorsList] = useState([]);
     const [specializations, setSpecializations] = useState([]);
