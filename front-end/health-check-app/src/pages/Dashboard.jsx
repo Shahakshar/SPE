@@ -8,15 +8,15 @@ const Dashboard = () => {
     const [token, setToken] = useState(null);
     
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        // console.log("Stored User:", storedUser);
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            setUser(parsedUser.user || null);
-            setToken(parsedUser.token || null);
-        }
-    }, []);
+    // useEffect(() => {
+    //     const storedUser = localStorage.getItem("user");
+    //     // console.log("Stored User:", storedUser);
+    //     if (storedUser) {
+    //         const parsedUser = JSON.parse(storedUser);
+    //         setUser(parsedUser.user || null);
+    //         setToken(parsedUser.token || null);
+    //     }
+    // }, []);
     const [originalDoctorsList, setOriginalDoctorsList] = useState([]);
     const [filteredDoctorsList, setFilteredDoctorsList] = useState([]);
     const [specializations, setSpecializations] = useState([]);
@@ -31,53 +31,59 @@ const Dashboard = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!user || !token) return;
-
-        if (user.role === "PATIENT") {
-            const fetchSpecializations = async () => {
+        const initialize = async () => {
+            const storedUser = localStorage.getItem("user");
+            if (!storedUser) return;
+    
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser.user || null);
+            setToken(parsedUser.token || null);
+    
+            if (!parsedUser.user || !parsedUser.token) return;
+    
+            const token = parsedUser.token;
+    
+            if (parsedUser.user.role === "PATIENT") {
                 try {
-                    const response = await fetch(`http://gateway.local/api/v1/patients/specialization-list`, {
+                    const res = await fetch(`http://gateway.local/api/v1/patients/specialization-list`, {
                         headers: {
                             'Content-Type': 'application/json',
                             Authorization: `Bearer ${token}`,
                         }
                     });
-                    const data = await response.json();
+                    const data = await res.json();
                     setSpecializations(data.data || []);
                 } catch (err) {
                     console.error('Failed to fetch specializations:', err);
                 }
-            };
-
-            fetchSpecializations();
-        }
-
-        const fetchAppointments = async () => {
+            }
+    
             try {
                 const endpoint =
-                    user.role === 'DOCTOR'
+                    parsedUser.user.role === 'DOCTOR'
                         ? `http://gateway.local/api/v1/doctors/welcome`
                         : `http://gateway.local/api/v1/patients/doctor-list`;
-
-                const response = await fetch(endpoint, {
+    
+                const res = await fetch(endpoint, {
                     headers: {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${token}`,
                     }
                 });
-
-                if (!response.ok) throw new Error(`Error ${response.status}`);
-
-                const data = await response.json();
+    
+                if (!res.ok) throw new Error(`Error ${res.status}`);
+    
+                const data = await res.json();
                 setOriginalDoctorsList(data.data || []);
                 setFilteredDoctorsList(data.data || []);
             } catch (err) {
                 setError(err.message);
             }
         };
-
-        fetchAppointments();
-    }, [user, token]);
+    
+        initialize();
+    }, []);
+    
 
     const handleSearch = (e) => {
         const value = e.target.value.toLowerCase();
