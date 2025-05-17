@@ -10,7 +10,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        console.log("Stored User:", storedUser);
+        // console.log("Stored User:", storedUser);
         if (storedUser) {
             const parsedUser = JSON.parse(storedUser);
             setUser(parsedUser.user || null);
@@ -118,7 +118,7 @@ const Dashboard = () => {
             const response = await fetch(`http://gateway.local/api/v1/patients/doctors/filter?${queryParams.toString()}`, {
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${user.token}`,
+                    Authorization: `Bearer ${token}`,
                 }
             });
 
