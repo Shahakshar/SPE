@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-// import { useSelector } from 'react-redux';
 import DoctorCard from '../component/DoctorCard';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
 
-    // const user = useSelector((state) => state.auth.user);
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(null);
     
@@ -217,7 +215,6 @@ const Dashboard = () => {
                 </div>}
 
 
-                {/* Doctor Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                     {filteredDoctorsList.length > 0 ? (
                         filteredDoctorsList.map(doctor => (

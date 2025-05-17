@@ -1,15 +1,16 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Calendar, Clock, FileText, ChevronRight, AlertCircle, User, Stethoscope } from 'lucide-react';
-import appointmentService from '../services/apiService';
+// import { useState, useEffect } from 'react';
+// import { Link } from 'react-router-dom';
+// import { Calendar, Clock, FileText, ChevronRight, AlertCircle, User, Stethoscope } from 'lucide-react';
+// import appointmentService from '../services/apiService';
 
-// const AppointmentListServ   = () => {
+
+
+// const AppointmentListServ = () => {
 //   const [appointments, setAppointments] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
 //   const [filter, setFilter] = useState('upcoming'); // 'upcoming', 'past', 'all'
   
-//   // Mock patientId - In a real app, this would come from authentication
 //   const patientId = 0;
   
 //   useEffect(() => {
@@ -180,7 +181,20 @@ import appointmentService from '../services/apiService';
 //                   <div className="flex justify-between items-start">
 //                     <div>
 //                       <h3 className="font-bold text-lg">{appointment.reason}</h3>
-//                       <div className="text-gray-600 mt-1">{appointment.notes || "No additional notes"}</div>
+                      
+//                       {/* Doctor info */}
+//                       <div className="flex items-center text-gray-600 mt-2">
+//                         <User size={16} className="mr-1" />
+//                         <span>Dr. {appointment.doctorName || "Smith"}</span>
+//                       </div>
+                      
+//                       {/* Service info */}
+//                       <div className="flex items-center text-gray-600 mt-1">
+//                         <Stethoscope size={16} className="mr-1" />
+//                         <span>{appointment.serviceName || "Medical Consultation"}</span>
+//                       </div>
+                      
+//                       <div className="text-gray-600 mt-2">{appointment.notes || "No additional notes"}</div>
 //                     </div>
 //                     <div className={`px-3 py-1 rounded-full text-sm flex items-center ${getStatusColor(appointment.status)}`}>
 //                       {getStatusIcon(appointment.status)}
@@ -211,21 +225,78 @@ import appointmentService from '../services/apiService';
 
 
 
-const AppointmentListServ = () => {
+
+
+import { useState, useEffect } from 'react';
+import { Calendar, Clock, FileText, ChevronRight, AlertCircle, User, Stethoscope } from 'lucide-react';
+import appointmentService from '../services/apiService';
+
+const AppointmentList = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filter, setFilter] = useState('upcoming'); // 'upcoming', 'past', 'all'
   
-  // Mock patientId - In a real app, this would come from authentication
-  const patientId = 0;
+  // Mocked user for demonstration
+  // In a real application, you would get this from your auth context
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    // Fetch user info first
+    const fetchUserInfo = async () => {
+      try {
+        // This should come from your auth context in a real app
+        // For demo purposes, let's assume you have the user ID stored somehow
+        const userId = localStorage.getItem('userId') || 1; // Default ID if not found
+        const userResponse = await appointmentService.getUserById(userId);
+        setUser(userResponse.data);
+      } catch (err) {
+        console.error('Failed to fetch user info:', err);
+        setError('Failed to load user information');
+      }
+    };
+    
+    fetchUserInfo();
+  }, []);
   
   useEffect(() => {
     const fetchAppointments = async () => {
+      if (!user || !user.id) return;
+      
       try {
         setLoading(true);
-        // Using the service for upcoming appointments
-        const response = await appointmentService.getAppointmentsByPatient(patientId);
+        let response;
+        
+        // Use different API endpoints based on user role and filter
+        if (user.role === 'DOCTOR') {
+          switch (filter) {
+            case 'upcoming':
+              response = await appointmentService.getUpcomingAppointmentsForDoctor(user.id);
+              break;
+            case 'all':
+              response = await appointmentService.getAllFutureAppointmentsForDoctor(user.id);
+              break;
+            case 'past':
+              response = await appointmentService.getAppointmentsByDoctor(user.id);
+              break;
+            default:
+              response = await appointmentService.getUpcomingAppointmentsForDoctor(user.id);
+          }
+        } else { // PATIENT
+          switch (filter) {
+            case 'upcoming':
+              response = await appointmentService.getUpcomingAppointmentsForPatient(user.id);
+              break;
+            case 'all':
+              response = await appointmentService.getAllFutureAppointmentsForPatient(user.id);
+              break;
+            case 'past':
+              response = await appointmentService.getAppointmentsByPatient(user.id);
+              break;
+            default:
+              response = await appointmentService.getUpcomingAppointmentsForPatient(user.id);
+          }
+        }
         
         // Sort appointments by date (newest first)
         const sortedAppointments = response.data.sort((a, b) => 
@@ -241,8 +312,10 @@ const AppointmentListServ = () => {
       }
     };
     
-    fetchAppointments();
-  }, [patientId]);
+    if (user) {
+      fetchAppointments();
+    }
+  }, [user, filter]);
   
   const formatDate = (dateTimeString) => {
     const date = new Date(dateTimeString);
@@ -297,6 +370,11 @@ const AppointmentListServ = () => {
     }
   };
   
+  const navigateToAppointmentDetail = (appointmentId) => {
+    // In a real app, use router navigation
+    window.location.href = `/appointment/${appointmentId}`;
+  };
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -318,7 +396,9 @@ const AppointmentListServ = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 pb-20">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">My Appointments</h1>
+        <h1 className="text-2xl font-bold">
+          {user?.role === 'DOCTOR' ? 'My Patient Appointments' : 'My Appointments'}
+        </h1>
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 flex">
           <button 
             onClick={() => setFilter('upcoming')}
@@ -368,10 +448,10 @@ const AppointmentListServ = () => {
       ) : (
         <div className="grid gap-4">
           {filteredAppointments().map(appointment => (
-            <Link 
+            <div 
               key={appointment.id}
-              to={`/appointments/${appointment.id}`}
-              className="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 overflow-hidden block"
+              onClick={() => navigateToAppointmentDetail(appointment.id)}
+              className="bg-white rounded-lg shadow hover:shadow-md transition-shadow duration-200 overflow-hidden block cursor-pointer"
             >
               <div className="flex flex-col md:flex-row">
                 <div className="bg-blue-100 p-4 md:p-6 flex items-center justify-center md:w-48">
@@ -389,11 +469,19 @@ const AppointmentListServ = () => {
                     <div>
                       <h3 className="font-bold text-lg">{appointment.reason}</h3>
                       
-                      {/* Doctor info */}
-                      <div className="flex items-center text-gray-600 mt-2">
-                        <User size={16} className="mr-1" />
-                        <span>Dr. {appointment.doctorName || "Smith"}</span>
-                      </div>
+                      {user?.role === 'DOCTOR' ? (
+                        // Show patient info for doctors
+                        <div className="flex items-center text-gray-600 mt-2">
+                          <User size={16} className="mr-1" />
+                          <span>{appointment.patientName || "Patient"}</span>
+                        </div>
+                      ) : (
+                        // Show doctor info for patients
+                        <div className="flex items-center text-gray-600 mt-2">
+                          <User size={16} className="mr-1" />
+                          <span>Dr. {appointment.doctorName || "Smith"}</span>
+                        </div>
+                      )}
                       
                       {/* Service info */}
                       <div className="flex items-center text-gray-600 mt-1">
@@ -411,7 +499,7 @@ const AppointmentListServ = () => {
                   
                   <div className="mt-4 flex justify-between items-center">
                     <div className="text-gray-500 text-sm">
-                      Consultation Fee: <span className="font-medium">${appointment.consultationFee.toFixed(2)}</span>
+                      Consultation Fee: <span className="font-medium">${appointment.consultationFee?.toFixed(2) || '0.00'}</span>
                     </div>
                     <div className="flex items-center text-blue-600">
                       View Details <ChevronRight size={16} className="ml-1" />
@@ -419,7 +507,7 @@ const AppointmentListServ = () => {
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}
@@ -427,4 +515,4 @@ const AppointmentListServ = () => {
   );
 };
 
-export default AppointmentListServ;
+export default AppointmentList;

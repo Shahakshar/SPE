@@ -17,16 +17,33 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service    
+@Service
 @RequiredArgsConstructor
 public class AppointmentServiceImplementation implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
-
     private final MeetingRoomService meetingRoomService;
+
+    // Define time slots with standardized format
+    private static final List<String> TIME_SLOTS = List.of(
+            "09:00 AM", "10:00 AM", "11:00 AM",
+            "02:00 PM", "03:00 PM", "04:00 PM"
+    );
+
+    // Working hours constants
+    private static final LocalTime WORKING_HOURS_START = LocalTime.of(9, 0);
+    private static final LocalTime WORKING_HOURS_END = LocalTime.of(17, 0);
+
+    // Format for time slots
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("hh:mm a");
+
     @Override
     @Transactional
     public Appointment createAppointment(AppointmentRequest request, UserDTO userDTO, ProfileDTO profileDTO, Treatment treatment) throws Exception {
@@ -35,7 +52,11 @@ public class AppointmentServiceImplementation implements AppointmentService {
         LocalDateTime appointmentStartTime = request.getStartTime();
         LocalDateTime appointmentEndTime = appointmentStartTime.plusMinutes(appointmentDuration);
 
+        // Validate time slot is available
         Boolean isSlotAvailable = isTimeSlotAvailable(profileDTO, appointmentStartTime, appointmentEndTime);
+        if (!isSlotAvailable) {
+            throw new Exception("The selected time slot is not available. Please choose another time slot.");
+        }
 
         Appointment newAppointment = new Appointment();
 
@@ -82,15 +103,17 @@ public class AppointmentServiceImplementation implements AppointmentService {
         // Extract the day of week to check doctor's working hours
         LocalDate appointmentDate = appointmentStartTime.toLocalDate();
 
-        // Check if appointment is during doctor's working hours (assume working hours are 9 AM to 5 PM)
-        LocalTime doctorStartTime = LocalTime.of(9, 0); // Can be moved to doctor profile
-        LocalTime doctorEndTime = LocalTime.of(17, 0); // Can be moved to doctor profile
+        // Check if the appointment is on a Sunday (day of week 7)
+        if (appointmentDate.getDayOfWeek().getValue() == 7) {
+            throw new Exception("Appointments are not available on Sundays");
+        }
 
-        LocalDateTime doctorDayStart = LocalDateTime.of(appointmentDate, doctorStartTime);
-        LocalDateTime doctorDayEnd = LocalDateTime.of(appointmentDate, doctorEndTime);
+        // Check if appointment is during doctor's working hours
+        LocalDateTime doctorDayStart = LocalDateTime.of(appointmentDate, WORKING_HOURS_START);
+        LocalDateTime doctorDayEnd = LocalDateTime.of(appointmentDate, WORKING_HOURS_END);
 
         if (appointmentStartTime.isBefore(doctorDayStart) || appointmentEndTime.isAfter(doctorDayEnd)) {
-            throw new Exception("Appointment time must be within doctor's working hours");
+            throw new Exception("Appointment time must be within doctor's working hours (9 AM to 5 PM)");
         }
 
         // Check if the requested slot overlaps with existing appointments
@@ -112,6 +135,17 @@ public class AppointmentServiceImplementation implements AppointmentService {
             if (appointmentStartTime.isEqual(existingStart) || appointmentEndTime.isEqual(existingEnd)) {
                 throw new Exception("This time slot is already booked. Please choose a different time slot.");
             }
+        }
+
+        // Check if the appointment start time matches one of our standard time slots
+        LocalTime appointmentTime = appointmentStartTime.toLocalTime();
+        String formattedTime = appointmentTime.format(TIME_FORMATTER).toUpperCase();
+
+        boolean isStandardTimeSlot = TIME_SLOTS.stream()
+                .anyMatch(slot -> slot.equalsIgnoreCase(formattedTime));
+
+        if (!isStandardTimeSlot) {
+            throw new Exception("Please select one of the standard appointment time slots");
         }
 
         return true;
@@ -168,6 +202,7 @@ public class AppointmentServiceImplementation implements AppointmentService {
     }
 
     private boolean isSameDate(LocalDateTime dateTime, LocalDate date) {
+        if (dateTime == null) return false;
         return dateTime.toLocalDate().isEqual(date);
     }
 
@@ -235,5 +270,47 @@ public class AppointmentServiceImplementation implements AppointmentService {
         // First check if appointment exists
         getAppointmentById(appointmentId);
         return meetingRoomService.getMeetingRoomByAppointmentId(appointmentId);
+    }
+
+    /**
+     * Gets available time slots for a specific doctor on a specific date
+     */
+    @Override
+    public List<String> getAvailableTimeSlots(Long doctorId, LocalDate date) {
+        // Check if date is null or in the past
+        LocalDate today = LocalDate.now();
+        if (date == null || date.isBefore(today)) {
+            return new ArrayList<>();
+        }
+
+        // Check if date is a Sunday (no slots available on Sundays)
+        if (date.getDayOfWeek().getValue() == 7) {
+            return new ArrayList<>();
+        }
+
+        // Get all existing appointments for this doctor on this date
+        List<Appointment> existingAppointments = appointmentRepository
+                .findByDoctorIdAndDate(doctorId, date);
+
+        // If repository method is not working, get appointments by doctor and filter by date
+        if (existingAppointments == null) {
+            existingAppointments = getAppointmentsByDoctor(doctorId).stream()
+                    .filter(appointment -> isSameDate(appointment.getStartTime(), date))
+                    .collect(Collectors.toList());
+        }
+
+        // Convert to a set of time strings for easier comparison
+        Set<String> bookedTimes = existingAppointments.stream()
+                .filter(appointment -> appointment.getStatus() != AppointmentStatus.CANCELLED)
+                .map(appointment -> {
+                    LocalTime time = appointment.getStartTime().toLocalTime();
+                    return time.format(TIME_FORMATTER).toUpperCase();
+                })
+                .collect(Collectors.toSet());
+
+        // Filter the time slots to only include available ones
+        return TIME_SLOTS.stream()
+                .filter(slotStr -> !bookedTimes.contains(slotStr.toUpperCase()))
+                .collect(Collectors.toList());
     }
 }

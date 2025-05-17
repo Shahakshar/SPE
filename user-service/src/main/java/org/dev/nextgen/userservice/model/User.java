@@ -38,9 +38,8 @@ public class User {
     @Column(name = "medical_history", columnDefinition = "TEXT")
     private String medicalHistory;
 
-    // Role information
     @Column(nullable = false)
-    private String role; // "DOCTOR" or "PATIENT" or other roles
+    private String role;
 
     // Doctor specific fields (null for non-doctors)
     @Column(name = "dr_description")

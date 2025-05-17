@@ -25,10 +25,6 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
-    @GetMapping("/hello")
-    public String messageHello() {
-        return "Hello Guys";
-    }
 
     @PostMapping
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentRequest request) {
@@ -105,5 +101,14 @@ public class AppointmentController {
     public ResponseEntity<DoctorReport> getDoctorReport(@PathVariable Long doctorId) {
         DoctorReport report = appointmentService.getDoctorReport(doctorId);
         return new ResponseEntity<>(report, HttpStatus.OK);
+    }
+
+    @GetMapping("/available-slots")
+    public ResponseEntity<List<String>> getAvailableSlots(
+            @RequestParam Long doctorId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        List<String> availableSlots = appointmentService.getAvailableTimeSlots(doctorId, date);
+        return ResponseEntity.ok(availableSlots);
     }
 }

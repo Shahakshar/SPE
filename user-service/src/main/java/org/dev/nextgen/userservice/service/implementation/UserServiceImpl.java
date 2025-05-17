@@ -225,4 +225,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    // find role by id.
+
 }

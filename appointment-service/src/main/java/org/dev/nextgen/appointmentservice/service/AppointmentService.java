@@ -34,4 +34,6 @@ public interface AppointmentService {
     List<Appointment> getUpcomingAppointmentsForPatient(Long patientId);
 
     DoctorReport getDoctorReport(Long doctorId);
+
+    List<String> getAvailableTimeSlots(Long doctorId, LocalDate date);
 }

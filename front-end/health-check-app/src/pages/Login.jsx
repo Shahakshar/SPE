@@ -1,219 +1,210 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { login } from '../utils/slices/authSlice';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../utils/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginRegister = () => {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const [isLogin, setIsLogin] = useState(true);
+  const [role, setRole] = useState("");
+  const [form, setForm] = useState({});
+  const navigate = useNavigate();
 
-    const dispatch = useDispatch();
-    const { user } = useSelector((state) => state.auth);
-    const [isLogin, setIsLogin] = useState(true);
-    const [role, setRole] = useState('');
-    const [form, setForm] = useState({});
-    const navigate = useNavigate();
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  }, [user, navigate]);
 
-    useEffect(() => {
-        if (user) {
-          navigate("/dashboard");
-        }
-      }, [user, navigate]);
+  const handleToggle = () => {
+    setIsLogin(!isLogin);
+    setRole("");
+    setForm({});
+  };
 
-    const handleToggle = () => {
-        setIsLogin(!isLogin);
-        setRole('');
-        setForm({});
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://gateway.local/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email, password: form.password }),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      const data = await response.json();
+      dispatch(login({ token: data.data.token, user: data.data.user }));
+      if (data.status === "200") navigate("/dashboard");
+    } catch (error) {
+      alert("Login failed: " + error.message);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      age: Number(form.age),
+      gender: form.gender,
+      address: form.address,
+      role,
+      dr_description: role === "DOCTOR" ? form.dr_description : "",
+      imageUrl: role === "DOCTOR" ? form.imageUrl : "",
+      expertise: role === "DOCTOR" ? form.expertise : "N/A",
+      available: role === "DOCTOR" ? form.available === "true" : false,
+      hourlyRate: role === "DOCTOR" ? Number(form.hourlyRate) : 0,
+      password: form.password,
     };
 
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
+    try {
+      const response = await fetch("http://gateway.local/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error(await response.text());
+      await response.json();
+      setIsLogin(true);
+      setForm({});
+      setRole("");
+    } catch (error) {
+      alert("Registration failed: " + error.message);
+    }
+  };
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-
-        const payload = {
-            email: form.email,
-            password: form.password,
-        }
-
-        try {
-            
-            const response = await fetch('http://gateway.local/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(error);
-            }
-            const data = await response.json();
-            console.log('Login successful:', data);
-            dispatch(login({ token: data.data.token, user: data.data.user}));
-            if (data.status === '200') {
-                navigate('/dashboard');
-            }
-        } catch (error) {   
-            console.error('Login failed:', error.message);
-            alert("Login failed: " + error.message);
-        }
-        
-    };
-
-    const handleRegister = async (e) => {
-        e.preventDefault();
-
-        
-        const payload = {
-            name: form.name,
-            email: form.email,
-            phone: form.phone,
-            age: Number(form.age),
-            gender: form.gender === 'Male' ? 'Male' : 'Female',
-            address: form.address,
-            role: role,
-            dr_description: role === 'DOCTOR' ? form.dr_description : '',
-            imageUrl: role === 'DOCTOR' ? form.imageUrl : '',
-            expertise: role === 'DOCTOR' ? form.expertise : 'N/A',
-            available: role === 'DOCTOR' ? (form.available === 'true' || form.available === true) : false,
-            hourlyRate: role === 'DOCTOR' ? Number(form.hourlyRate) : 0,
-            password: form.password
-        }
-        
-        
-        console.log("Final Payload:", payload);
-        
-        try {
-            const response = await fetch('http://gateway.local/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
-    
-            if (!response.ok) {
-                const error = await response.text();
-                throw new Error(error);
-            }
-    
-            const data = await response.json();
-            console.log('Registration successful:', data);
-    
-            // Toggle to login screen
-            setIsLogin(true);
-            setForm({});
-            setRole('');
-        } catch (error) {
-            console.error('Registration failed:', error.message);
-            alert("Registration failed: " + error.message);
-        }
-    };
-
-    return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded shadow-md w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center">
-                    {isLogin ? 'Login' : 'Register'}
-                </h2>
-
-                {isLogin ? (
-                    <form onSubmit={handleLogin}>
-                        <input name="email" type="email" placeholder="Email" onChange={handleChange} required className="w-full mb-3 p-2 border rounded" />
-                        <input name="password" type="password" placeholder="Password" onChange={handleChange} required className="w-full mb-3 p-2 border rounded" />
-                        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Login</button>
-                    </form>
-                ) : (
-                    <>
-                        {!role && (
-                            <div className="mb-4 text-center">
-                                <p className="mb-2">Register as:</p>
-                                <button onClick={() => setRole('DOCTOR')} className="mr-2 px-4 py-2 bg-green-600 text-white rounded">Doctor</button>
-                                <button onClick={() => setRole('PATIENT')} className="px-4 py-2 bg-purple-600 text-white rounded">Patient</button>
-                            </div>
-                        )}
-                        {role && (
-                            <form onSubmit={handleRegister}>
-                                <div className="mb-2">
-                                    <label className="block text-sm">Name</label>
-                                    <input name="name" onChange={handleChange} className="w-full p-2 border rounded" />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-sm">Email</label>
-                                    <input name="email" type="email" onChange={handleChange} className="w-full p-2 border rounded" />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-sm">Phone</label>
-                                    <input name="phone" onChange={handleChange} className="w-full p-2 border rounded" />
-                                </div>
-                                <div className="mb-2">
-                                    <label className="block text-sm">Age</label>
-                                    <input name="age" type="number" onChange={handleChange} className="w-full p-2 border rounded" />
-                                </div>
-                                <div className="mb-2">
-                                            <label className="block text-sm">Address</label>
-                                            <input name="address" onChange={handleChange} className="w-full p-2 border rounded" />
-                                        </div>
-                                <div className="mb-2">
-                                    <label className="block text-sm">Gender</label>
-                                    <select name="gender" onChange={handleChange} className="w-full p-2 border rounded">
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
-                                </div>
-                                {role === "DOCTOR" && (
-                                    <>
-                                        <div className="mb-2">
-                                            <label className="block text-sm">Description</label>
-                                            <input name="dr_description" onChange={handleChange} className="w-full p-2 border rounded" />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label className="block text-sm">Image URL</label>
-                                            <input name="imageUrl" onChange={handleChange} className="w-full p-2 border rounded" />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label className="block text-sm">Expertise</label>
-                                            <input name="expertise" onChange={handleChange} className="w-full p-2 border rounded" />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label className="block text-sm">Hourly Rate</label>
-                                            <input name="hourlyRate" type="number" onChange={handleChange} className="w-full p-2 border rounded" />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label className="block text-sm">Available</label>
-                                            <select name="available" onChange={handleChange} className="w-full p-2 border rounded">
-                                                <option value="">Select</option>
-                                                <option value="true">Yes</option>
-                                                <option value="false">No</option>
-                                            </select>
-                                        </div>
-                                    </>
-                                )}
-                                <div className="mb-2">
-                                    <label className="block text-sm">Password</label>
-                                    <input name="password" type="password" placeholder="Password" onChange={handleChange} required className="w-full mb-3 p-2 border rounded" />
-                                </div>
-                                
-                                <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Register</button>
-                            </form>
-                        )}
-                    </>
-                )}
-
-                <div className="mt-4 text-center">
-                    <p>
-                        {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
-                        <button onClick={handleToggle} className="text-blue-600 underline">
-                            {isLogin ? 'Register' : 'Login'}
-                        </button>
-                    </p>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-50 px-4 py-10 flex items-center justify-center">
+      <div className="w-full max-w-5xl bg-white shadow-xl rounded-3xl p-10 border border-gray-200 space-y-8">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-indigo-700">
+            {isLogin ? "Welcome Back" : "Create an Account"}
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            {isLogin ? "Login to continue" : "Please fill the form to register"}
+          </p>
+          <button onClick={handleToggle} className="mt-4 text-indigo-600 hover:underline">
+            {isLogin ? "Need an account? Register" : "Already have an account? Login"}
+          </button>
         </div>
-    );
+
+        {isLogin ? (
+          <form onSubmit={handleLogin} className="space-y-6 max-w-md mx-auto">
+            <input
+              name="email"
+              type="email"
+              placeholder="Email"
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            <input
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            <button
+              type="submit"
+              className="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition"
+            >
+              Log In
+            </button>
+          </form>
+        ) : (
+          <div className="space-y-6">
+            {!role ? (
+              <div className="text-center">
+                <p className="mb-4 font-medium text-gray-600">Register as:</p>
+                <div className="flex justify-center gap-6">
+                  <button
+                    onClick={() => setRole("DOCTOR")}
+                    className="px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 transition"
+                  >
+                    Doctor
+                  </button>
+                  <button
+                    onClick={() => setRole("PATIENT")}
+                    className="px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition"
+                  >
+                    Patient
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleRegister} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <input name="name" placeholder="Full Name" onChange={handleChange} className="input" />
+                  <input name="email" type="email" placeholder="Email" onChange={handleChange} className="input" />
+                  <input name="phone" placeholder="Phone" onChange={handleChange} className="input" />
+                  <input name="age" type="number" placeholder="Age" onChange={handleChange} className="input" />
+                  <input name="address" placeholder="Address" onChange={handleChange} className="input" />
+                  <select name="gender" onChange={handleChange} className="input">
+                    <option value="">Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+
+                  {role === "DOCTOR" && (
+                    <>
+                      <input name="dr_description" placeholder="Description" onChange={handleChange} className="input" />
+                      <input name="expertise" placeholder="Expertise" onChange={handleChange} className="input" />
+                      <input name="hourlyRate" type="number" placeholder="Hourly Rate" onChange={handleChange} className="input" />
+                      <select name="available" onChange={handleChange} className="input">
+                        <option value="">Availability</option>
+                        <option value="true">Available</option>
+                        <option value="false">Not Available</option>
+                      </select>
+                      <input name="imageUrl" placeholder="Image URL" onChange={handleChange} className="input" />
+                    </>
+                  )}
+
+                  <input
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={handleChange}
+                    required
+                    className="input"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-green-600 text-white py-3 rounded-xl hover:bg-green-700 transition"
+                >
+                  Register
+                </button>
+              </form>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Input styles */}
+      <style>{`
+        .input {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.75rem;
+          font-size: 1rem;
+          outline: none;
+          transition: all 0.2s;
+          background-color: #fff;
+        }
+        .input:focus {
+          border-color: #6366f1;
+          box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+      `}</style>
+    </div>
+  );
 };
 
 export default LoginRegister;
