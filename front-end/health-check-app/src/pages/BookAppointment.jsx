@@ -66,10 +66,8 @@ export default function BookAppointment() {
   const canProceedToNext = () => {
     switch (step) {
       case 1:
-        return selectedDate !== null;
+        return selectedDate !== null && selectedTime !== '';
       case 2:
-        return selectedTime !== '';
-      case 3:
         return symptoms.trim() !== '';
       default:
         return false;
@@ -247,17 +245,19 @@ export default function BookAppointment() {
 
         {step === 1 && (
           <div>
-            <h2 className="text-xl font-semibold mb-2 text-purple-700">📅 Select Date</h2>
+            <h2 className="text-xl font-semibold mb-4 text-purple-700">📅 Select Date & Time</h2>
             <TimeSlotSelector 
               doctorId={doctor.id}
               onDateSelect={handleDateSelect}
-              onTimeSelect={() => {}}
+              onTimeSelect={handleTimeSelect}
             />
             <button
-              onClick={() => setStep(2)}
-              disabled={!selectedDate}
+              onClick={() => selectedDate && selectedTime && setStep(2)}
+              disabled={!selectedDate || !selectedTime}
               className={`w-full mt-4 px-5 py-2 text-white rounded-lg transition ${
-                !selectedDate ? 'bg-purple-300 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'
+                !selectedDate || !selectedTime 
+                  ? 'bg-purple-300 cursor-not-allowed' 
+                  : 'bg-purple-600 hover:bg-purple-700'
               }`}
             >
               Next →
@@ -267,38 +267,15 @@ export default function BookAppointment() {
 
         {step === 2 && (
           <div>
-            <h2 className="text-xl font-semibold mb-2 text-purple-700">⏰ Select Time Slot</h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Selected Date: {format(selectedDate, 'MMMM d, yyyy')}
-            </p>
-            <TimeSlotSelector 
-              doctorId={doctor.id}
-              onDateSelect={handleDateSelect}
-              onTimeSelect={handleTimeSelect}
-            />
-            <div className="flex justify-between mt-4">
-              <button
-                onClick={() => setStep(1)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
-              >
-                ← Back
-              </button>
-              <button
-                onClick={() => setStep(3)}
-                disabled={!selectedTime}
-                className={`px-5 py-2 text-white rounded-lg transition ${
-                  !selectedTime ? 'bg-purple-300 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'
-                }`}
-              >
-                Next →
-              </button>
+            <h2 className="text-xl font-semibold mb-4 text-purple-700">📝 Appointment Details</h2>
+            <div className="bg-purple-50 p-4 rounded-lg mb-4">
+              <p className="text-sm text-purple-800">
+                <strong>Selected Date:</strong> {format(selectedDate, 'MMMM d, yyyy')}
+              </p>
+              <p className="text-sm text-purple-800">
+                <strong>Selected Time:</strong> {selectedTime}
+              </p>
             </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div>
-            <h2 className="text-xl font-semibold mb-2 text-purple-700">📝 Appointment Details</h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Symptoms <span className="text-red-500">*</span></label>
@@ -352,7 +329,7 @@ export default function BookAppointment() {
 
             <div className="flex justify-between mt-6">
               <button
-                onClick={() => setStep(2)}
+                onClick={() => setStep(1)}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800"
                 disabled={loading}
               >

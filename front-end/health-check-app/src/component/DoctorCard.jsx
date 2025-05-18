@@ -1,57 +1,49 @@
 import React from 'react';
 
 const DoctorCard = ({ doctor, onBook }) => {
-  const isAvailable = doctor.available;
-
   return (
-    <div
-      className={`relative bg-white shadow-xl rounded-3xl overflow-hidden transition-all transform ${
-        isAvailable ? 'hover:scale-105' : 'opacity-50 blur-sm pointer-events-none'
-      }`}
-    >
-      {/* Doctor Image */}
-      <div className="relative">
+    <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+      <div className="flex items-center mb-4">
         <img
-          src={doctor.imageUrl}
+          src={doctor.imageUrl || '/default-doctor-avatar.png'}
           alt={doctor.name}
-          className="w-full h-48 object-cover rounded-t-3xl"
+          className="w-16 h-16 rounded-full object-cover mr-4"
         />
-        <span
-          className={`absolute top-3 right-3 px-3 py-1 text-xs font-medium rounded-full ${
-            isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}
-        >
-          {isAvailable ? 'Available' : 'Not Available'}
-        </span>
+        <div>
+          <h3 className="text-lg font-semibold">{doctor.name}</h3>
+          <p className="text-sm text-blue-600">{doctor.expertise}</p>
+        </div>
+      </div>
+      
+      <div className="mb-4">
+        <p className="text-sm text-gray-600">{doctor.description}</p>
+        <div className="flex items-center mt-2">
+          <span className="text-yellow-400">★</span>
+          <span className="ml-1 text-sm text-gray-600">{doctor.rating.toFixed(1)}</span>
+          <span className="mx-2">•</span>
+          <span className="text-sm text-gray-600">${doctor.hourlyRate}/hour</span>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5 space-y-3">
-        <h2 className="text-xl font-bold text-gray-800">{doctor.name}</h2>
-        <p className="text-indigo-600 font-medium">{doctor.expertise}</p>
-        <p className="text-gray-600 text-sm">{doctor.description}</p>
-
-        <div className="flex justify-between text-sm mt-2 border-t pt-2 text-gray-700">
-          <span>⭐ <strong>{doctor.rating}</strong></span>
-          <span className="text-blue-600 font-semibold">₹{doctor.hourlyRate}/hr</span>
-        </div>
-
-        <div className="text-sm text-gray-500 mt-2 space-y-1">
-          <p><strong>Email:</strong> {doctor.email}</p>
-          <p><strong>Phone:</strong> {doctor.phone}</p>
-        </div>
-
-        {/* Book Button */}
+      <div className="flex justify-between items-center">
+        <span className={`px-2 py-1 rounded-full text-xs ${
+          doctor.available 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {doctor.available ? 'Available' : 'Unavailable'}
+        </span>
+        
         <button
           onClick={() => onBook(doctor)}
-          disabled={!isAvailable}
-          className={`w-full mt-4 py-2 px-4 rounded-xl font-semibold text-white transition ${
-            isAvailable
-              ? 'bg-blue-600 hover:bg-blue-700 shadow'
-              : 'bg-gray-400 cursor-not-allowed'
+          disabled={!doctor.available}
+          className={`px-4 py-2 rounded-md ${
+            doctor.available
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
           }`}
         >
-          {isAvailable ? 'Book Appointment' : 'Not Available'}
+          Book Appointment
         </button>
       </div>
     </div>

@@ -1,24 +1,3 @@
-// import { useState } from 'react';
-// import { v4 as uuidv4 } from 'uuid';
-// import Room from './component/Room';
-// import Body from './component/appRoute.jsx';
-// import BookingForm from './component/hospital-booking/BookingForm.jsx'
-// import './App.css';
-// function App() {
-//   return (
-//       // <Body/>
-
-//   // <div className="min-h-screen bg-gray-50 py-8">
-//     <BookingForm/>
-//   // </div>
-
-//   );
-// }
-
-// export default App;
-
-
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import BookAppointment from './pages/BookAppointment';

@@ -12,6 +12,24 @@ const apiClient = axios.create({
 });
 
 
+const apiClientAuth = axios.create({
+  baseURL: 'http://localhost:3001/api/auth',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: false
+});
+
+// User service (port 6001)
+const apiClientUser = axios.create({
+  baseURL: 'http://localhost:6001/api/v1/users',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: false
+});
+
+
 // Appointment services
 const appointmentService = {
   // Create a new appointment
@@ -82,55 +100,62 @@ const appointmentService = {
   },
 
 
-  /// ==================== User Service
+  // ========================
+  // Auth Endpoints (3001)
+  // ========================
 
-  getAllUsers: () => apiClient.get('/api/v1/users/list'),
+  // Register a new user
+  register: (registerData) => apiClientAuth.post('/register', registerData),
 
-  // Get all doctors
-  getAllDoctors: () => apiClient.get('/api/v1/users/doctors'),
+  // Login user
+  login: (loginData) => apiClientAuth.post('/login', loginData),
 
-  // Get all patients
-  getAllPatients: () => apiClient.get('/api/v1/users/patients'),
+  // ========================
+  // User Service Endpoints (6001)
+  // ========================
 
-  // Get a user by ID
-  getUserById: (id) => apiClient.get(`/api/v1/users/${id}`),
+  // User CRUD
+  getAllUsers: () => apiClientUser.get('/list'),
+  getUserById: (id) => apiClientUser.get(`/${id}`),
+  getUserByEmail: (email) => apiClientUser.get(`/email/${email}`),
+  createUser: (userData) => apiClientUser.post('/', userData),
+  updateUser: (id, userData) => apiClientUser.put(`/${id}`, userData),
+  deleteUser: (id) => apiClientUser.delete(`/${id}`),
 
-  // Get available doctors only
-  getAvailableDoctors: () => apiClient.get('/api/v1/users/doctors/available'),
-
-  // Get doctors by specialization
+  // Doctor-specific
+  getAllDoctors: () => apiClientUser.get('/doctors'),
+  getAvailableDoctors: () => apiClientUser.get('/doctors/available'),
   getDoctorsBySpecialization: (specialization) =>
-    apiClient.get(`/api/v1/users/doctors/specialization/${specialization}`),
-
-  // Get doctors by minimum rating
+    apiClientUser.get(`/doctors/specialization/${specialization}`),
   getDoctorsByMinimumRating: (minRating) =>
-    apiClient.get(`/api/v1/users/doctors/rating/${minRating}`),
-
-  // Get doctors by maximum hourly rate
+    apiClientUser.get(`/doctors/rating/${minRating}`),
   getDoctorsByMaxHourlyRate: (maxRate) =>
-    apiClient.get(`/api/v1/users/doctors/rate/${maxRate}`),
+    apiClientUser.get(`/doctors/rate/${maxRate}`),
 
-  // Search users by name
+  // Patient-specific
+  getAllPatients: () => apiClientUser.get('/patients'),
+
+  // Search
   searchUsersByName: (name) =>
-    apiClient.get(`/api/v1/users/search?name=${name}`),
+    apiClientUser.get(`/search?name=${encodeURIComponent(name)}`),
 
-  // Get user by email
-  getUserByEmail: (email) =>
-    apiClient.get(`/api/v1/users/email/${email}`),
-
-  // Create new user
-  createUser: (userData) => apiClient.post('/api/v1/users', userData),
-
-  // Update existing user
-  updateUser: (id, userData) => apiClient.put(`/api/v1/users/${id}`, userData),
-
-  // Delete a user
-  deleteUser: (id) => apiClient.delete(`/api/v1/users/${id}`),
-
-  // Get future appointments by doctor and date
-  // getFutureAppointmentsByDate: (doctorId, date) =>
-  //   apiClient.get(`/api/futureAppointments/doctor/${doctorId}/date?date=${date}`),
-
+  // For patient dashboard (if applicable)
+  getSpecializationList: (token) =>
+    apiClientUser.get('/specialization-list', {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+  getDoctorList: (token) =>
+    apiClientUser.get('/doctor-list', {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+  getDoctorWelcomeData: (token) =>
+    apiClientUser.get('/doctors/welcome', {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+  filterDoctors: (params, token) =>
+    apiClientUser.get(`/doctors/filter?${new URLSearchParams(params)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 };
 
 export default appointmentService;

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../utils/slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import appointmentService from "../services/apiService";
 
 const LoginRegister = () => {
   const dispatch = useDispatch();
@@ -28,22 +29,28 @@ const LoginRegister = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://gateway.local/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: form.email, password: form.password }),
+      const response = await appointmentService.login({
+        email: form.email,
+        password: form.password,
       });
-      if (!response.ok) throw new Error(await response.text());
-      const data = await response.json();
+
+      const data = response.data;
       dispatch(login({ token: data.data.token, user: data.data.user }));
-      if (data.status === "200") navigate("/dashboard");
+
+      if (data.status === "200") {
+        navigate("/dashboard");
+      }
     } catch (error) {
-      alert("Login failed: " + error.message);
+      console.error("Login error:", error);
+      const errorMsg =
+        error.response?.data?.message || "Login failed. Please try again.";
+      alert(errorMsg);
     }
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     const payload = {
       name: form.name,
       email: form.email,
@@ -61,18 +68,15 @@ const LoginRegister = () => {
     };
 
     try {
-      const response = await fetch("http://gateway.local/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error(await response.text());
-      await response.json();
+      await appointmentService.register(payload);
       setIsLogin(true);
       setForm({});
       setRole("");
     } catch (error) {
-      alert("Registration failed: " + error.message);
+      console.error("Registration error:", error);
+      const errorMsg =
+        error.response?.data?.message || "Registration failed. Please try again.";
+      alert(errorMsg);
     }
   };
 

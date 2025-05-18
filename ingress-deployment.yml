@@ -41,20 +41,6 @@ spec:
                 name: gateway-service
                 port:
                   number: 80
-#          - path: /api/auth/register
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: gateway-service
-#                port:
-#                  number: 80
-#          - path: /api/auth/login
-#            pathType: Prefix
-#            backend:
-#              service:
-#                name: gateway-service
-#                port:
-#                  number: 80
           - path: /api/v1/doctors
             pathType: Prefix
             backend:

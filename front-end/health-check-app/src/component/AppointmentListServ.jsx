@@ -231,7 +231,7 @@ import { useState, useEffect } from 'react';
 import { Calendar, Clock, FileText, ChevronRight, AlertCircle, User, Stethoscope } from 'lucide-react';
 import appointmentService from '../services/apiService';
 
-const AppointmentList = () => {
+const AppointmentListServ = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -372,7 +372,7 @@ const AppointmentList = () => {
   
   const navigateToAppointmentDetail = (appointmentId) => {
     // In a real app, use router navigation
-    window.location.href = `/appointment/${appointmentId}`;
+    window.location.href = `/appointments/${appointmentId}`;
   };
   
   if (loading) {
@@ -515,4 +515,4 @@ const AppointmentList = () => {
   );
 };
 
-export default AppointmentList;
+export default AppointmentListServ;
