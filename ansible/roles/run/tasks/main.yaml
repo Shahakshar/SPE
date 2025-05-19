@@ -1,7 +1,7 @@
 - name: Apply MySQL deployment
   command: kubectl apply -f mysql-deployment.yml
   args:
-    chdir: "{{ playbook_dir }}"
+     chdir: "{{ playbook_dir | dirname | dirname }}"
   register: mysql_output
   become: yes
 
@@ -20,7 +20,7 @@
     kubectl apply -f appointment-service-deployment.yml
     kubectl apply -f gateway-service-deployment.yml
   args:
-    chdir: "{{ playbook_dir }}"
+    chdir: "{{ playbook_dir | dirname | dirname }}"
   register: services_output
   become: yes
 
@@ -31,7 +31,7 @@
 - name: Apply ingress deployment
   command: kubectl apply -f ingress-deployment.yml
   args:
-    chdir: "{{ playbook_dir }}"
+     chdir: "{{ playbook_dir | dirname | dirname }}"
   register: ingress_output
   become: yes
 
