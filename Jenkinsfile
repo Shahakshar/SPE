@@ -96,15 +96,17 @@ pipeline {
         stage('Deploy with Ansible') {
             steps {
                 script {
-                    // Assuming your Ansible playbook is at repo root, named deploy.yml
-                    // Passing docker image tags as extra-vars for dynamic deployment
-                    sh """
-                    ansible-playbook deploy.yml --extra-vars \\
-                        appointment_image=${APPOINTMENT_IMAGE} \\
-                        auth_image=${AUTH_IMAGE} \\
-                        gateway_image=${GATEWAY_IMAGE} \\
-                        user_image=${USER_IMAGE} \\
-                    """
+                    withEnv(["ANSIBLE_HOST_KEY_CHECKING=False"]) {
+                        dir('ansible') {
+                            sh """
+                            ansible-playbook deploy.yml --extra-vars \\
+                                appointment_image=${APPOINTMENT_IMAGE} \\
+                                auth_image=${AUTH_IMAGE} \\
+                                gateway_image=${GATEWAY_IMAGE} \\
+                                user_image=${USER_IMAGE} \\
+                            """
+                        }
+                    }
                 }
             }
         }
