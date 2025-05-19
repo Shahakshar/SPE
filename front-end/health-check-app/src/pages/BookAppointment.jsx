@@ -35,9 +35,17 @@ export default function BookAppointment() {
         }
         setDoctor(doctorResponse.data);
 
-        // Fetch current user details (patient)
-        const userId = 1; // Replace with actual auth context or route param
-        const userResponse = await appointmentService.getUserById(userId);
+        // Get user from localStorage
+        const storedUser = localStorage.getItem("user");
+        if (!storedUser) {
+          throw new Error('User not logged in');
+        }
+
+        const parsedUser = JSON.parse(storedUser);
+        console.log("User from localStorage:", parsedUser.user);
+
+        // Fetch current user details using ID from localStorage
+        const userResponse = await appointmentService.getUserById(parsedUser.user.id);
         if (!userResponse.data) {
           throw new Error('Failed to load user details');
         }
@@ -55,13 +63,17 @@ export default function BookAppointment() {
         console.error('Error fetching data:', error);
         setError(error.message);
         toast.error(error.message);
+        if (error.message === 'User not logged in') {
+          // Redirect to login if user is not authenticated
+          navigate('/login', { state: { from: `/book/${id}` } });
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, [id, navigate]);
 
   const canProceedToNext = () => {
     switch (step) {
@@ -108,11 +120,21 @@ export default function BookAppointment() {
       if (isPM && hour !== 12) hour += 12;
       if (!isPM && hour === 12) hour = 0;
       
+      // Create date in local timezone
       const appointmentDate = new Date(dateObj);
       appointmentDate.setHours(hour, parseInt(minutes), 0, 0);
       
-      console.log('Parsed DateTime:', appointmentDate);
-      return appointmentDate;
+      // Get timezone offset in minutes
+      const tzOffset = appointmentDate.getTimezoneOffset();
+      
+      // Adjust for timezone
+      const adjustedDate = new Date(appointmentDate.getTime() - (tzOffset * 60000));
+      
+      console.log('Local DateTime:', appointmentDate);
+      console.log('Adjusted DateTime:', adjustedDate);
+      console.log('ISO String:', adjustedDate.toISOString());
+      
+      return adjustedDate;
     } catch (error) {
       console.error('Error parsing time:', error);
       return null;

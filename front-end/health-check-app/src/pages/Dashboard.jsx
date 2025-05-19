@@ -35,12 +35,6 @@ const Dashboard = () => {
       setToken(parsedUser.token || null);
 
       try {
-        // Fetch specializations for patients
-        // if (parsedUser.user?.role === 'PATIENT') {
-        //   const specializationsRes = await appointmentService.getSpecializationList(parsedUser.token);
-        //   setSpecializations(specializationsRes.data || []);
-        // }
-
         // Fetch doctors list
         const doctorsResponse = await appointmentService.getAllDoctors();
         const doctorsList = doctorsResponse.data || [];
@@ -56,6 +50,14 @@ const Dashboard = () => {
     };
 
     initialize();
+  }, []);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser.user);
+    }
   }, []);
 
   const handleSearch = (e) => {
@@ -124,6 +126,11 @@ const Dashboard = () => {
         </div>
       </div>
     );
+  }
+
+  // Redirect if user is a doctor
+  if (user?.role === 'DOCTOR') {
+    return null;
   }
 
   // Auth check remains the same

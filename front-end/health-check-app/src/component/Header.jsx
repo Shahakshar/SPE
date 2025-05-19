@@ -9,10 +9,15 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    const user = {
-        name: "John Doe",
-        profilePic: "/path/to/profile-pic.jpg"
-    }; 
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            setUser(parsedUser.user);
+        }
+    }, []);
 
     const [isDrawerOpen, setDrawerOpen] = useState(false);
     const [isProfileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -21,7 +26,6 @@ const Header = () => {
     const profileRef = useRef(null);
 
     const handleLogout = () => {
-        // Perform logout logic here
         dispatch(logout());
         localStorage.removeItem('user');
         setProfileMenuOpen(false);
@@ -51,12 +55,14 @@ const Header = () => {
                 >
                     ☰
                 </button>
-                <Link to="/dashboard" className="text-xl font-bold">
+                <Link to={user?.role === 'DOCTOR' ? '/appointment' : '/dashboard'} className="text-xl font-bold">
                     Health Check
                 </Link>
 
                 <div className="hidden md:flex space-x-6 items-center">
-                    <Link to="/dashboard" className="hover:underline">Dashboard</Link>
+                    {user?.role === 'PATIENT' && (
+                        <Link to="/dashboard" className="hover:underline">Dashboard</Link>
+                    )}
                     <Link to="/appointment" className="hover:underline">Appointment</Link>
                     <Link to="/notification" className="hover:underline">Notification</Link>
 
@@ -109,7 +115,9 @@ const Header = () => {
                         </button>
 
                         <nav className="flex flex-col space-y-4">
-                            <Link to="/dashboard" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Dashboard</Link>
+                            {user?.role === 'PATIENT' && (
+                                <Link to="/dashboard" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Dashboard</Link>
+                            )}
                             <Link to="/appointment" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Appointment</Link>
                             <Link to="/notification" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Notification</Link>
 
