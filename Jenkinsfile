@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         GITHUB_CRED_ID = 'github-creds'
-        DOCKERHUB_CRED_ID = 'dockerhub-creds'
+        DOCKERHUB_CRED_ID = 'docker-hub-credentials'
         GITHUB_REPO_URL = 'https://github.com/Shahakshar/SPE.git'
 
         DOCKER_USER = 'akdev6298'  // replace with your Docker Hub username
@@ -13,7 +13,6 @@ pipeline {
         AUTH_IMAGE = "${DOCKER_USER}/authenticationandauthorizationmicroservice:${IMAGE_TAG}"
         GATEWAY_IMAGE = "${DOCKER_USER}/gateway-service:${IMAGE_TAG}"
         USER_IMAGE = "${DOCKER_USER}/user-service:${IMAGE_TAG}"
-        FRONTEND_IMAGE = "${DOCKER_USER}/front-end:${IMAGE_TAG}"
     }
 
     stages {
@@ -58,10 +57,6 @@ pipeline {
                     dir('user-service') {
                         sh './mvnw clean package -DskipTests'
                     }
-                    dir('front-end') {
-                        sh 'npm install'
-                        sh 'npm run dev'
-                    }
                 }
             }
         }
@@ -81,9 +76,6 @@ pipeline {
                     dir('user-service') {
                         sh "docker build -t ${USER_IMAGE} ."
                     }
-                    dir('front-end') {
-                        sh "docker build -t ${FRONTEND_IMAGE} ."
-                    }
                 }
             }
         }
@@ -96,7 +88,6 @@ pipeline {
                         sh "docker push ${AUTH_IMAGE}"
                         sh "docker push ${GATEWAY_IMAGE}"
                         sh "docker push ${USER_IMAGE}"
-                        sh "docker push ${FRONTEND_IMAGE}"
                     }
                 }
             }
@@ -113,7 +104,6 @@ pipeline {
                         auth_image=${AUTH_IMAGE} \\
                         gateway_image=${GATEWAY_IMAGE} \\
                         user_image=${USER_IMAGE} \\
-                        frontend_image=${FRONTEND_IMAGE}
                     """
                 }
             }
