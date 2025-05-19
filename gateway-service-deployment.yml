@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: akdev6298/gateway-service:0.0.6
+          image: akdev6298/gateway-service:0.0.7
           ports:
             - containerPort: 8765
 ---

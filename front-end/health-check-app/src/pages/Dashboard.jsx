@@ -35,6 +35,19 @@ const Dashboard = () => {
       setToken(parsedUser.token || null);
 
       try {
+        // Fetch specializations
+        const specializationResponse = await appointmentService.getSpecializationList(parsedUser.token);
+        const specializationList = specializationResponse.data.data || [];
+        setSpecializations(specializationList);
+        setError(null); // Reset error state
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message || 'Failed to load user data');
+      } finally {
+        setLoading(false);
+      }
+
+      try {
         // Fetch doctors list
         const doctorsResponse = await appointmentService.getAllDoctors();
         const doctorsList = doctorsResponse.data || [];
@@ -50,14 +63,6 @@ const Dashboard = () => {
     };
 
     initialize();
-  }, []);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser.user);
-    }
   }, []);
 
   const handleSearch = (e) => {

@@ -48,3 +48,17 @@ spec:
                 name: gateway-service
                 port:
                   number: 80
+          - path: /api/appointments
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 80
+          - path: /api/futureAppointments
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway-service
+                port:
+                  number: 80

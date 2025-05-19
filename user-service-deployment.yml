@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: akdev6298/user-service:0.0.2
+          image: akdev6298/user-service:0.0.3
           ports:
             - containerPort: 6001
           env:

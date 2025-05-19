@@ -14,7 +14,7 @@ spec:
         app: appointment-service
     spec:
       containers:
-        - name: user-service
+        - name: appointment-service
           image: akdev6298/appointment-service:0.0.1
           ports:
             - containerPort: 6001

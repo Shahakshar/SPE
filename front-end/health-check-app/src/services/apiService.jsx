@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Base URL for API calls
-const API_BASE_URL = 'http://localhost:6002';
+// Base URL For Appointment service (6002)
+const API_BASE_URL = 'http://gateway.local';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -140,22 +140,15 @@ const appointmentService = {
     apiClientUser.get(`/search?name=${encodeURIComponent(name)}`),
 
   // For patient dashboard (if applicable)
-  getSpecializationList: (token) =>
-    apiClientUser.get('/specialization-list', {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+  getSpecializationList: () =>
+    apiClientUser.get('/specialization-list'),
+
   getDoctorList: (token) =>
-    apiClientUser.get('/doctor-list', {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+    apiClientUser.get('/doctor-list'),
   getDoctorWelcomeData: (token) =>
-    apiClientUser.get('/doctors/welcome', {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+    apiClientUser.get('/doctors/welcome'),
   filterDoctors: (params, token) =>
-    apiClientUser.get(`/doctors/filter?${new URLSearchParams(params)}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    }),
+    apiClientUser.get(`/doctors/filter?${new URLSearchParams(params)}`),
 };
 
 export default appointmentService;

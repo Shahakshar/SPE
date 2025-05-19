@@ -20,9 +20,9 @@ public class GatewayConfig {
                         .uri("http://auth-microservice.spe.svc.cluster.local:3001"))
                 .route("user-service", r -> r.path("/api/v1/users/**")
                         .uri("http://user-service.spe.svc.cluster.local:6001"))
-                .route("user-service", r -> r.path("/api/v1/users/**")
-                        .uri("http://user-service.spe.svc.cluster.local:6001"))
                 .route("appointment-service", r -> r.path("/api/appointments/**")
+                        .uri("http://appointment-service.spe.svc.cluster.local:6002"))
+                .route("appointment-service", r -> r.path("/api/futureAppointments/**")
                         .uri("http://appointment-service.spe.svc.cluster.local:6002"))
                 .build();
     }
