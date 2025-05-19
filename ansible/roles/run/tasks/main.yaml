@@ -1,29 +1,40 @@
-- name: Ensure the script is executable
-  command: chmod +x elk-db-start.sh start.sh
+- name: Apply MySQL deployment
+  command: kubectl apply -f mysql-deployment.yml
   args:
-    chdir: "{{ (playbook_dir + '/../k8s') | realpath }}"
+    chdir: "{{ playbook_dir }}"
+  register: mysql_output
   become: yes
-  
-- name: Start ELK and DB
-  shell: ./elk-db-start.sh
-  args:
-    chdir: "{{ (playbook_dir + '/../k8s') | realpath }}"
-  register: elk_db_start
 
-- name: Show ELK and DB start output
+- name: Show MySQL apply output
   debug:
-    var: elk_db_start.stdout_lines
+    var: mysql_output.stdout_lines
 
-- name: Wait 60 seconds for ELK and DB to initialize
+- name: Wait for ELK and MySQL to stabilize
   pause:
     seconds: 60
 
-- name: Start application services and ingress
-  shell: ./start.sh
+- name: Apply all microservices
+  shell: |
+    kubectl apply -f auth-microservice-deployment.yml
+    kubectl apply -f user-service-deployment.yml
+    kubectl apply -f appointment-service-deployment.yml
+    kubectl apply -f gateway-service-deployment.yml
   args:
-    chdir: "{{ (playbook_dir + '/../k8s') | realpath }}"
-  register: app_start
+    chdir: "{{ playbook_dir }}"
+  register: services_output
+  become: yes
 
-- name: Show application start output
+- name: Show services deployment output
   debug:
-    var: app_start.stdout_lines
+    var: services_output.stdout_lines
+
+- name: Apply ingress deployment
+  command: kubectl apply -f ingress-deployment.yml
+  args:
+    chdir: "{{ playbook_dir }}"
+  register: ingress_output
+  become: yes
+
+- name: Show ingress deployment output
+  debug:
+    var: ingress_output.stdout_lines
