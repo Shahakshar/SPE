@@ -1,5 +1,6 @@
 package org.dev.nextgen.userservice.controller;
 
+import org.dev.nextgen.userservice.model.BaseResponse;
 import org.dev.nextgen.userservice.model.User;
 import org.dev.nextgen.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,5 +119,23 @@ public class UserController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/specialization-list")
+    public ResponseEntity<BaseResponse> getAllSpecializations() {
+        List<String> specializations = userService.getAllSpecializations();
+        BaseResponse response = new BaseResponse("200", "Success", null, specializations);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/doctors/filter")
+    public ResponseEntity<BaseResponse> filterDoctors(
+            @RequestParam(required = false) String specialization,
+            @RequestParam(required = false) Double minRating,
+            @RequestParam(required = false) Double rate,
+            @RequestParam(required = false) Boolean available
+    ) {
+        List<User> doctors = userService.filterDoctors(specialization, minRating, rate, available);
+        return ResponseEntity.ok(new BaseResponse("200", "Success", null, doctors));
     }
 }

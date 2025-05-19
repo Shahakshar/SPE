@@ -13,7 +13,7 @@ const apiClient = axios.create({
 
 
 const apiClientAuth = axios.create({
-  baseURL: 'http://localhost:3001/api/auth',
+  baseURL: 'http://gateway.local/api/auth',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -22,7 +22,7 @@ const apiClientAuth = axios.create({
 
 // User service (port 6001)
 const apiClientUser = axios.create({
-  baseURL: 'http://localhost:6001/api/v1/users',
+  baseURL: 'http://gateway.local/api/v1/users',
   headers: {
     'Content-Type': 'application/json',
   },
