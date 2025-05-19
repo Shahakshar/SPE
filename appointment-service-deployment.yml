@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appointment-service
+  namespace: spe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appointment-service
+  template:
+    metadata:
+      labels:
+        app: appointment-service
+    spec:
+      containers:
+        - name: user-service
+          image: akdev6298/appointment-service:0.0.1
+          ports:
+            - containerPort: 6001
+          env:
+            - name: SPRING_APPLICATION_NAME
+              value: appointment-service
+            - name: SERVER_PORT
+              value: "6002"
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:mysql://mysql.spe.svc.cluster.local:3306/SPE?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: root
+            - name: SPRING_DATASOURCE_DRIVER_CLASS_NAME
+              value: com.mysql.cj.jdbc.Driver
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: update
+            - name: SPRING_JPA_SHOW_SQL
+              value: "true"
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL
+              value: "true"
+            - name: SPRING_JPA_GENERATE_DDL
+              value: "true"
+            - name: SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT
+              value: org.hibernate.dialect.MySQLDialect
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointment-service
+  namespace: spe
+spec:
+  selector:
+    app: appointment-service
+  ports:
+    - port: 6002
+      targetPort: 6002
+  type: ClusterIP
