@@ -99,12 +99,7 @@ pipeline {
                     withEnv(["ANSIBLE_HOST_KEY_CHECKING=False"]) {
                         dir('ansible') {
                             sh """
-                            ansible-playbook deploy.yml --extra-vars \\
-                                appointment_image=${APPOINTMENT_IMAGE} \\
-                                auth_image=${AUTH_IMAGE} \\
-                                gateway_image=${GATEWAY_IMAGE} \\
-                                user_image=${USER_IMAGE} \\
-                            """
+                            ansible-playbook -i inventory.ini playbook.yml
                         }
                     }
                 }
