@@ -1,3 +1,7 @@
+- name: Print calculated path
+  debug:
+    msg: "My calculated chdir path: {{ playbook_dir | dirname | dirname }}"
+    
 - name: Apply MySQL deployment
   command: kubectl apply -f mysql-deployment.yml
   args:
