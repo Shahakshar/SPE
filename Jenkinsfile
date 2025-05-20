@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_CRED_ID = 'github-creds'
+        GITHUB_CRED_ID = 'GITHUB_CRED'
         DOCKERHUB_CRED_ID = 'docker-hub-credentials'
         GITHUB_REPO_URL = 'https://github.com/Shahakshar/SPE.git'
 
