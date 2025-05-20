@@ -80,18 +80,18 @@ pipeline {
         //     }
         // }
 
-        stage('Push Docker Images') {
-            steps {
-                script {
-                    docker.withRegistry('', "${DOCKERHUB_CRED_ID}") {
-                        sh "docker push ${APPOINTMENT_IMAGE}"
-                        sh "docker push ${AUTH_IMAGE}"
-                        sh "docker push ${GATEWAY_IMAGE}"
-                        sh "docker push ${USER_IMAGE}"
-                    }
-                }
-            }
-        }
+        // stage('Push Docker Images') {
+        //     steps {
+        //         script {
+        //             docker.withRegistry('', "${DOCKERHUB_CRED_ID}") {
+        //                 sh "docker push ${APPOINTMENT_IMAGE}"
+        //                 sh "docker push ${AUTH_IMAGE}"
+        //                 sh "docker push ${GATEWAY_IMAGE}"
+        //                 sh "docker push ${USER_IMAGE}"
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Deploy with Ansible') {
             steps {
