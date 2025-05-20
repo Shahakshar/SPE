@@ -24,61 +24,61 @@ pipeline {
             }
         }
 
-        stage('Prepare Maven Wrapper') {
-            steps {
-                script {
-                    def mavenServices = [
-                        'appointment-service',
-                        'AuthenticationAndAuthorizationMicroService',
-                        'gateway-service',
-                        'user-service'
-                    ]
-                    mavenServices.each { service ->
-                        dir(service) {
-                            sh 'chmod +x mvnw'
-                        }
-                    }
-                }
-            }
-        }
+        // stage('Prepare Maven Wrapper') {
+        //     steps {
+        //         script {
+        //             def mavenServices = [
+        //                 'appointment-service',
+        //                 'AuthenticationAndAuthorizationMicroService',
+        //                 'gateway-service',
+        //                 'user-service'
+        //             ]
+        //             mavenServices.each { service ->
+        //                 dir(service) {
+        //                     sh 'chmod +x mvnw'
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Build Microservices') {
-            steps {
-                script {
-                    dir('appointment-service') {
-                        sh './mvnw clean package -DskipTests'
-                    }
-                    dir('AuthenticationAndAuthorizationMicroService') {
-                        sh './mvnw clean package -DskipTests'
-                    }
-                    dir('gateway-service') {
-                        sh './mvnw clean package -DskipTests'
-                    }
-                    dir('user-service') {
-                        sh './mvnw clean package -DskipTests'
-                    }
-                }
-            }
-        }
+        // stage('Build Microservices') {
+        //     steps {
+        //         script {
+        //             dir('appointment-service') {
+        //                 sh './mvnw clean package -DskipTests'
+        //             }
+        //             dir('AuthenticationAndAuthorizationMicroService') {
+        //                 sh './mvnw clean package -DskipTests'
+        //             }
+        //             dir('gateway-service') {
+        //                 sh './mvnw clean package -DskipTests'
+        //             }
+        //             dir('user-service') {
+        //                 sh './mvnw clean package -DskipTests'
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage('Build Docker Images') {
-            steps {
-                script {
-                    dir('appointment-service') {
-                        sh "docker build -t ${APPOINTMENT_IMAGE} ."
-                    }
-                    dir('AuthenticationAndAuthorizationMicroService') {
-                        sh "docker build -t ${AUTH_IMAGE} ."
-                    }
-                    dir('gateway-service') {
-                        sh "docker build -t ${GATEWAY_IMAGE} ."
-                    }
-                    dir('user-service') {
-                        sh "docker build -t ${USER_IMAGE} ."
-                    }
-                }
-            }
-        }
+        // stage('Build Docker Images') {
+        //     steps {
+        //         script {
+        //             dir('appointment-service') {
+        //                 sh "docker build -t ${APPOINTMENT_IMAGE} ."
+        //             }
+        //             dir('AuthenticationAndAuthorizationMicroService') {
+        //                 sh "docker build -t ${AUTH_IMAGE} ."
+        //             }
+        //             dir('gateway-service') {
+        //                 sh "docker build -t ${GATEWAY_IMAGE} ."
+        //             }
+        //             dir('user-service') {
+        //                 sh "docker build -t ${USER_IMAGE} ."
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Push Docker Images') {
             steps {
@@ -99,7 +99,7 @@ pipeline {
                     withEnv(["ANSIBLE_HOST_KEY_CHECKING=False"]) {
                         dir('ansible') {
                             sh """
-                                ansible-playbook -i inventory.ini playbook.yml
+                                ansible-playbook -i inventory.ini playbook.yaml
                             """
                         }
                     }
