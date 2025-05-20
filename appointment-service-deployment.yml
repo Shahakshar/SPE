@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: appointment-service
-          image: akdev6298/appointment-service:0.0.1
+          image: akdev6298/appointment-service:latest
           ports:
             - containerPort: 6001
           env:
