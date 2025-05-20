@@ -5,7 +5,7 @@ FROM eclipse-temurin:17-jdk-alpine
 WORKDIR /app
 
 # Copy the jar from local target directory
-COPY target/authenticationandauthorizationmicroservice-0.0.1.jar app.jar
+COPY target/AuthenticationAndAuthorizationMicroService-0.0.1.jar app.jar
 
 # Expose the application's port
 EXPOSE 3001
