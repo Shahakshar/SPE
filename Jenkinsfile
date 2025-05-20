@@ -99,12 +99,14 @@ pipeline {
                     withEnv(["ANSIBLE_HOST_KEY_CHECKING=False"]) {
                         dir('ansible') {
                             sh """
-                            ansible-playbook -i inventory.ini playbook.yml
+                                ansible-playbook -i inventory.ini playbook.yml
+                            """
                         }
                     }
                 }
             }
         }
+
 
         stage('Cleanup') {
             steps {
