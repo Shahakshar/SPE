@@ -5,6 +5,7 @@ pipeline {
         GITHUB_CRED_ID = 'GITHUB_CRED'
         DOCKERHUB_CRED_ID = 'docker-hub-credentials'
         GITHUB_REPO_URL = 'https://github.com/Shahakshar/SPE.git'
+        DEV_EMAIL = 'akshau0123@gmail.com'
 
         DOCKER_USER = 'akdev6298'  // replace with your Docker Hub username
         IMAGE_TAG = "latest"
@@ -24,74 +25,74 @@ pipeline {
             }
         }
 
-        // stage('Prepare Maven Wrapper') {
-        //     steps {
-        //         script {
-        //             def mavenServices = [
-        //                 'appointment-service',
-        //                 'AuthenticationAndAuthorizationMicroService',
-        //                 'gateway-service',
-        //                 'user-service'
-        //             ]
-        //             mavenServices.each { service ->
-        //                 dir(service) {
-        //                     sh 'chmod +x mvnw'
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Prepare Maven Wrapper') {
+            steps {
+                script {
+                    def mavenServices = [
+                        'appointment-service',
+                        'AuthenticationAndAuthorizationMicroService',
+                        'gateway-service',
+                        'user-service'
+                    ]
+                    mavenServices.each { service ->
+                        dir(service) {
+                            sh 'chmod +x mvnw'
+                        }
+                    }
+                }
+            }
+        }
 
-        // stage('Build Microservices') {
-        //     steps {
-        //         script {
-        //             dir('appointment-service') {
-        //                 sh './mvnw clean package -DskipTests'
-        //             }
-        //             dir('AuthenticationAndAuthorizationMicroService') {
-        //                 sh './mvnw clean package -DskipTests'
-        //             }
-        //             dir('gateway-service') {
-        //                 sh './mvnw clean package -DskipTests'
-        //             }
-        //             dir('user-service') {
-        //                 sh './mvnw clean package -DskipTests'
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build Microservices') {
+            steps {
+                script {
+                    dir('appointment-service') {
+                        sh './mvnw clean package -DskipTests'
+                    }
+                    dir('AuthenticationAndAuthorizationMicroService') {
+                        sh './mvnw clean package -DskipTests'
+                    }
+                    dir('gateway-service') {
+                        sh './mvnw clean package -DskipTests'
+                    }
+                    dir('user-service') {
+                        sh './mvnw clean package -DskipTests'
+                    }
+                }
+            }
+        }
 
-        // stage('Build Docker Images') {
-        //     steps {
-        //         script {
-        //             dir('appointment-service') {
-        //                 sh "docker build -t ${APPOINTMENT_IMAGE} ."
-        //             }
-        //             dir('AuthenticationAndAuthorizationMicroService') {
-        //                 sh "docker build -t ${AUTH_IMAGE} ."
-        //             }
-        //             dir('gateway-service') {
-        //                 sh "docker build -t ${GATEWAY_IMAGE} ."
-        //             }
-        //             dir('user-service') {
-        //                 sh "docker build -t ${USER_IMAGE} ."
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    dir('appointment-service') {
+                        sh "docker build -t ${APPOINTMENT_IMAGE} ."
+                    }
+                    dir('AuthenticationAndAuthorizationMicroService') {
+                        sh "docker build -t ${AUTH_IMAGE} ."
+                    }
+                    dir('gateway-service') {
+                        sh "docker build -t ${GATEWAY_IMAGE} ."
+                    }
+                    dir('user-service') {
+                        sh "docker build -t ${USER_IMAGE} ."
+                    }
+                }
+            }
+        }
 
-        // stage('Push Docker Images') {
-        //     steps {
-        //         script {
-        //             docker.withRegistry('', "${DOCKERHUB_CRED_ID}") {
-        //                 sh "docker push ${APPOINTMENT_IMAGE}"
-        //                 sh "docker push ${AUTH_IMAGE}"
-        //                 sh "docker push ${GATEWAY_IMAGE}"
-        //                 sh "docker push ${USER_IMAGE}"
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Push Docker Images') {
+            steps {
+                script {
+                    docker.withRegistry('', "${DOCKERHUB_CRED_ID}") {
+                        sh "docker push ${APPOINTMENT_IMAGE}"
+                        sh "docker push ${AUTH_IMAGE}"
+                        sh "docker push ${GATEWAY_IMAGE}"
+                        sh "docker push ${USER_IMAGE}"
+                    }
+                }
+            }
+        }
 
         stage('Deploy with Ansible') {
             steps {
