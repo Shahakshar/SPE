@@ -10,7 +10,7 @@
     </parent>
     <groupId>org.dev.nextgen</groupId>
     <artifactId>AuthenticationAndAuthorizationMicroService</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.1</version>
     <name>authenticationandauthorizationmicroservice</name>
     <description>AuthenticationAndAuthorizationMicroService</description>
     <url/>
@@ -119,12 +119,12 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <image>
-                        <name>akdev6298/${project.name}:${project.version}</name>
-                    </image>
-                    <pullPolicy>IF_NOT_PRESENT</pullPolicy>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <image>-->
+<!--                        <name>akdev6298/${project.name}:${project.version}</name>-->
+<!--                    </image>-->
+<!--                    <pullPolicy>IF_NOT_PRESENT</pullPolicy>-->
+<!--                </configuration>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
