@@ -21,8 +21,8 @@ public class Appointment {
     @Column(name = "doctor_id", nullable = false)
     private Long doctorId;
 
-//    @Column(name = "doctor_name", nullable = false)
-//    private String doctorName;
+    @Column(name = "doctor_name", nullable = false)
+    private String doctorName;
 
     @Column(name = "patient_id", nullable = false)
     private Long patientId;

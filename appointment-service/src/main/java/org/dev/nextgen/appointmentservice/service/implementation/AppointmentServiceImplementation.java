@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.dev.nextgen.appointmentservice.domain.AppointmentStatus;
 import org.dev.nextgen.appointmentservice.dto.AppointmentRequest;
 import org.dev.nextgen.appointmentservice.dto.ProfileDTO;
+import org.dev.nextgen.appointmentservice.dto.UsersDTO;
 import org.dev.nextgen.appointmentservice.model.MeetingRoom;
 import org.dev.nextgen.appointmentservice.model.Treatment;
 import org.dev.nextgen.appointmentservice.dto.UserDTO;
@@ -13,6 +14,7 @@ import org.dev.nextgen.appointmentservice.repository.AppointmentRepository;
 import org.dev.nextgen.appointmentservice.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.dev.nextgen.appointmentservice.service.MeetingRoomService;
+import org.dev.nextgen.appointmentservice.service.client.UserServiceFeignClient;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class AppointmentServiceImplementation implements AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final MeetingRoomService meetingRoomService;
+    private final UserServiceFeignClient userServiceFeignClient;
 
     // Define time slots with standardized format
     private static final List<String> TIME_SLOTS = List.of(
@@ -68,6 +71,9 @@ public class AppointmentServiceImplementation implements AppointmentService {
         newAppointment.setPatientGender(userDTO.getGender());
 
         newAppointment.setDoctorId(profileDTO.getId());
+        UsersDTO usersDTO = userServiceFeignClient.getUserById(profileDTO.getId()).getBody();
+
+        newAppointment.setDoctorName(usersDTO.getName());
         newAppointment.setServiceId(treatment.getId());
 
         newAppointment.setStatus(AppointmentStatus.PENDING);

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class UsersDTO {
     private Long id;
     private String name;
     private String email;
@@ -16,5 +16,14 @@ public class UserDTO {
     private String gender;
     private String address;
     private String medicalHistory;
+    private String role;
+
+    // Doctor-specific fields
+    private String description;
+    private String imageUrl;
+    private String expertise;
+    private Boolean available;
+    private Double rating;
+    private Double hourlyRate;
 
 }

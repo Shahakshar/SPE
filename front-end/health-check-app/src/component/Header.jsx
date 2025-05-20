@@ -56,7 +56,7 @@ const Header = () => {
                     ☰
                 </button>
                 <Link to={user?.role === 'DOCTOR' ? '/appointment' : '/dashboard'} className="text-xl font-bold">
-                    Health Check
+                    SynapseCare 
                 </Link>
 
                 <div className="hidden md:flex space-x-6 items-center">
