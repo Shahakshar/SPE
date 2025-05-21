@@ -5,7 +5,7 @@ pipeline {
         GITHUB_CRED_ID = 'GITHUB_CRED'
         DOCKERHUB_CRED_ID = 'docker-hub-credentials'
         GITHUB_REPO_URL = 'https://github.com/Shahakshar/SPE.git'
-        DEV_EMAIL = 'akdev6298@gmail.com'
+        DEV_EMAIL = 'akshau0123@gmail.com'
 
         DOCKER_USER = 'akdev6298'  // replace with your Docker Hub username
         IMAGE_TAG = "latest"
