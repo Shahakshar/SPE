@@ -1,1 +1,20 @@
-github token: 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
+github token: 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123123
+
+kubectl patch configmap app-config -n spe --patch '{"data":{"env.js":"window.env = { VITE_API_BASE_URL: \"http://new-url\",VITE_BACKEND_URL: \"http:new-url\" };"}}'
+
+----> go to env.js dir means cd /front-end/public/ 
+kubectl create configmap app-config --from-file=env.js=env.js -n spe --dry-run=client -o yaml | kubectl replace -f -
+
+kubectl rollout restart deployment/frontend-deployment -n spe
+
+----> verify that reflect the url
+kubectl exec -it deployment/frontend-deployment -n spe -- cat /usr/share/nginx/html/env.js
+
+----> if want to connect ec2 instance on ews /Download there is SPE-WebSocket.pem file is there and run cmd there
+ssh -i SPE-WebSocket.pem ec2-user@<public-ip>
+
+----> ngrok aksharshah079@gmail.com
+ngrok config add-authtoken <token>
+
+----> ngrok akdev6298@gmail.com	
+ngrok config add-authtoken <token>

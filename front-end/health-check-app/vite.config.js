@@ -17,17 +17,18 @@ export default defineConfig({
     },
     cors: true,
     allowedHosts: [
-      'd5c8-2406-7400-94-c711-d3b9-2bb6-1369-f9.ngrok-free.app',
+        'https://1c76-49-34-211-110.ngrok-free.app',
+      '*.ngrok-free.app',
       'localhost', 
       '127.0.0.1',
-      '*.ngrok-free.app',
       '*.ngrok.io'
     ],
     proxy: {
       '/api': {
-        target: 'http://localhost:80',
+        target: 'https://1c76-49-34-211-110.ngrok-free.app',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        secure: false,
+        rewrite: path => path.replace(/^\/api/, '')
       }
     }
   },

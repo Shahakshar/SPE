@@ -18,6 +18,13 @@ spec:
           image: akdev6298/gateway-service:latest
           ports:
             - containerPort: 8765
+          env:
+            - name: allowed.origins
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: allowed.origins
+
 ---
 apiVersion: v1
 kind: Service

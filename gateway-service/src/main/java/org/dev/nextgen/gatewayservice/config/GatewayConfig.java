@@ -1,5 +1,6 @@
 package org.dev.nextgen.gatewayservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,9 @@ import java.util.Arrays;
 
 @Configuration
 public class GatewayConfig {
+
+    @Value("${cors.allowed.origins}")
+    private String allwedOrigins;
 
     @Bean
     public RouteLocator customRouterLocation(RouteLocatorBuilder builder) {
@@ -30,7 +34,7 @@ public class GatewayConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+        corsConfig.addAllowedOriginPattern("*");
         corsConfig.setMaxAge(3600L);
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfig.setAllowedHeaders(Arrays.asList("*"));

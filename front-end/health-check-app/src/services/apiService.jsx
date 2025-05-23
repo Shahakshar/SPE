@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL For Appointment service (6002)
-const API_BASE_URL = 'http://gateway.local';
+const API_BASE_URL = window.env?.VITE_API_BASE_URL || "http://gateway.local";
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +13,7 @@ const apiClient = axios.create({
 
 
 const apiClientAuth = axios.create({
-  baseURL: 'http://gateway.local/api/auth',
+  baseURL: `${API_BASE_URL}/api/auth`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -22,7 +22,7 @@ const apiClientAuth = axios.create({
 
 // User service (port 6001)
 const apiClientUser = axios.create({
-  baseURL: 'http://gateway.local/api/v1/users',
+  baseURL: `${API_BASE_URL}/api/v1/users`,
   headers: {
     'Content-Type': 'application/json',
   },

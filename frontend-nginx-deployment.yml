@@ -1,34 +1,44 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-nginx-deployment
-  labels:
-    app: frontend-nginx
+  name: frontend-deployment
+  namespace: spe
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend-nginx
+      app: frontend
   template:
     metadata:
       labels:
-        app: frontend-nginx
+        app: frontend
     spec:
       containers:
-        - name: frontend-nginx
-          image: akdev6298/frontend-nginx:v9
+        - name: frontend
+          image: frontend-app:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/share/nginx/html/env.js
+              subPath: env.js
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: app-config
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-nginx-deployment
+  name: frontend-service
+  namespace: spe
 spec:
-  type: NodePort 
   selector:
-    app: frontend-nginx
+    app: frontend
   ports:
     - port: 80
       targetPort: 80
-      nodePort: 30080
+  type: ClusterIP

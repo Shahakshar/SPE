@@ -12,6 +12,8 @@ const LoginRegister = () => {
   const [form, setForm] = useState({});
   const navigate = useNavigate();
 
+  console.log(window.env?.VITE_API_BASE_URL);
+
   useEffect(() => {
     if (user) navigate("/dashboard");
   }, [user, navigate]);
