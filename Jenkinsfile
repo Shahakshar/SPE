@@ -7,7 +7,7 @@ pipeline {
         GITHUB_REPO_URL = 'https://github.com/Shahakshar/SPE.git'
         DEV_EMAIL = 'akshau0123@gmail.com'
 
-        DOCKER_USER = 'akdev6298'  // replace with your Docker Hub username
+        DOCKER_USER = 'akdev6298'
         IMAGE_TAG = "latest"
 
         APPOINTMENT_IMAGE = "${DOCKER_USER}/appointment-service:${IMAGE_TAG}"
@@ -25,6 +25,7 @@ pipeline {
             }
         }
 
+        /* 
         stage('Prepare Maven Wrapper') {
             steps {
                 script {
@@ -93,6 +94,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Deploy with Ansible') {
             steps {
@@ -107,7 +109,6 @@ pipeline {
                 }
             }
         }
-
 
         stage('Cleanup') {
             steps {
@@ -133,4 +134,3 @@ pipeline {
         }
     }
 }
-
