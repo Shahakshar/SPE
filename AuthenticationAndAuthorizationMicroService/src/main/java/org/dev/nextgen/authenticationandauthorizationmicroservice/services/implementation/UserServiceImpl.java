@@ -1,5 +1,6 @@
 package org.dev.nextgen.authenticationandauthorizationmicroservice.services.implementation;
 
+import jakarta.transaction.Transactional;
 import org.dev.nextgen.authenticationandauthorizationmicroservice.configuration.CustomPasswordEncoder;
 import org.dev.nextgen.authenticationandauthorizationmicroservice.models.BaseResponse;
 import org.dev.nextgen.authenticationandauthorizationmicroservice.models.LoginResponse;
@@ -127,6 +128,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Transactional
     @Override
     public BaseResponse changePasswordOfAllUsers(String newPassword) {
         userRepository.updateAllUserPasswords(passwordEncoder.encode(newPassword));

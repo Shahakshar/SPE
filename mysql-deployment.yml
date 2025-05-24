@@ -13,6 +13,8 @@ spec:
       labels:
         app: mysql
     spec:
+      securityContext:
+        fsGroup: 999
       containers:
         - name: mysql
           image: mysql:8.0
@@ -30,6 +32,7 @@ spec:
         - name: mysql-storage
           persistentVolumeClaim:
             claimName: mysql-pvc
+
 
 ---
 apiVersion: v1

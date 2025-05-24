@@ -43,9 +43,10 @@ public class AuthController {
     }
 
     @PutMapping("/update-password")
-    public ResponseEntity<BaseResponse> updatePassword(@RequestParam String newPassword) {
-        BaseResponse response = userService.changePasswordOfAllUsers(newPassword);
-        return ResponseEntity.status(HttpStatusCode.valueOf(Integer.parseInt(response.getStatus()))).body(response);
+    public ResponseEntity<BaseResponse> updatePassword(@RequestBody String password) {
+        BaseResponse response = userService.changePasswordOfAllUsers(password);
+        return ResponseEntity.ok(response); // Use standard 200 OK
     }
+
 }
 
