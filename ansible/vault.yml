@@ -1,3 +1,3 @@
-ansible_ssh_user: akshar
-ansible_ssh_pass: Akshar@079
-ansible_become_pass: Akshar@079
+ansible_ssh_user: user
+ansible_ssh_pass: 123456
+ansible_become_pass: 123456
