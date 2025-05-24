@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: frontend-app:latest
-          imagePullPolicy: Never
+          image: akdev6298/frontend-app:latest
+#          imagePullPolicy: Never
           ports:
             - containerPort: 80
           volumeMounts:

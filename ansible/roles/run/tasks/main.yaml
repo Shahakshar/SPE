@@ -3,7 +3,7 @@
     msg: "My calculated chdir path: {{ playbook_dir | dirname }}"
     
 - name: Apply MySQL deployment
-  command: kubectl apply -f mysql-deployment.yml --kubeconfig=/home/user/.kube/config
+  command: kubectl apply -f mysql-deployment.yml --kubeconfig=/home/akshar/.kube/config
   args:
      chdir: "{{ playbook_dir | dirname }}"
   register: mysql_output
@@ -17,12 +17,21 @@
   pause:
     seconds: 60
 
+- name: Apply Config Map for frontend and for microservices
+  command: kubectl apply -f spe-configmap.yml --kubeconfig=/home/akshar/.kube/config
+  args:
+     chdir: "{{ playbook_dir | dirname }}"
+  register: config_map_output
+  become: yes
+
 - name: Apply all microservices
   shell: |
-    kubectl apply -f auth-microservice-deployment.yml --kubeconfig=/home/user/.kube/config
-    kubectl apply -f user-service-deployment.yml --kubeconfig=/home/user/.kube/config
-    kubectl apply -f appointment-service-deployment.yml --kubeconfig=/home/user/.kube/config
-    kubectl apply -f gateway-service-deployment.yml --kubeconfig=/home/user/.kube/config
+    kubectl apply -f auth-microservice-deployment.yml --kubeconfig=/home/akshar/.kube/config
+    kubectl apply -f user-service-deployment.yml --kubeconfig=/home/akshar/.kube/config
+    kubectl apply -f appointment-service-deployment.yml --kubeconfig=/home/akshar/.kube/config
+    kubectl apply -f gateway-service-deployment.yml --kubeconfig=/home/akshar/.kube/config
+    kubectl apply -f frontend-nginx-deployment.yml --kubeconfig=/home/akshar/.kube/config
+    kubectl apply -f websocket-deployment.yml --kubeconfig=/home/akshar/.kube/config
   args:
     chdir: "{{ playbook_dir | dirname }}"
   register: services_output
@@ -33,7 +42,7 @@
     var: services_output.stdout_lines
 
 - name: Apply ingress deployment
-  command: kubectl apply -f ingress-deployment.yml --kubeconfig=/home/user/.kube/config
+  command: kubectl apply -f ingress-deployment.yml --kubeconfig=/home/akshar/.kube/config
   args:
      chdir: "{{ playbook_dir | dirname }}"
   register: ingress_output

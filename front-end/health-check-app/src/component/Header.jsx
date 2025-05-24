@@ -64,7 +64,7 @@ const Header = () => {
                         <Link to="/dashboard" className="hover:underline">Dashboard</Link>
                     )}
                     <Link to="/appointment" className="hover:underline">Appointment</Link>
-                    <Link to="/notification" className="hover:underline">Notification</Link>
+                    {/*<Link to="/notification" className="hover:underline">Notification</Link>*/}
 
                     {user && (
                         <div className="relative" ref={profileRef}>
@@ -119,7 +119,7 @@ const Header = () => {
                                 <Link to="/dashboard" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Dashboard</Link>
                             )}
                             <Link to="/appointment" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Appointment</Link>
-                            <Link to="/notification" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Notification</Link>
+                            {/*<Link to="/notification" onClick={() => setDrawerOpen(false)} className="text-gray-800 hover:text-blue-600">Notification</Link>*/}
 
                             {user && (
                                 <>

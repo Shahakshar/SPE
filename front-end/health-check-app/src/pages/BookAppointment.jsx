@@ -42,7 +42,7 @@ export default function BookAppointment() {
         }
 
         const parsedUser = JSON.parse(storedUser);
-        console.log("User from localStorage:", parsedUser.user);
+        // console.log("User from localStorage:", parsedUser.user);
 
         // Fetch current user details using ID from localStorage
         const userResponse = await appointmentService.getUserById(parsedUser.user.id);
@@ -87,12 +87,12 @@ export default function BookAppointment() {
   };
 
   const handleTimeSelect = (time) => {
-    console.log("Selected time slot:", time);
+    // console.log("Selected time slot:", time);
     setSelectedTime(time);
   };
 
   const handleDateSelect = (date) => {
-    console.log("Selected date:", date);
+    // console.log("Selected date:", date);
     setSelectedDate(date);
     setSelectedTime('');
   };
@@ -130,9 +130,9 @@ export default function BookAppointment() {
       // Adjust for timezone
       const adjustedDate = new Date(appointmentDate.getTime() - (tzOffset * 60000));
       
-      console.log('Local DateTime:', appointmentDate);
-      console.log('Adjusted DateTime:', adjustedDate);
-      console.log('ISO String:', adjustedDate.toISOString());
+      // console.log('Local DateTime:', appointmentDate);
+      // console.log('Adjusted DateTime:', adjustedDate);
+      // console.log('ISO String:', adjustedDate.toISOString());
       
       return adjustedDate;
     } catch (error) {
@@ -156,11 +156,11 @@ export default function BookAppointment() {
         throw new Error('Failed to parse appointment time correctly');
       }
       
-      console.log('Booking appointment with details:', {
-        date: selectedDate,
-        time: selectedTime,
-        parsed: startDateTime
-      });
+      // console.log('Booking appointment with details:', {
+      //   date: selectedDate,
+      //   time: selectedTime,
+      //   parsed: startDateTime
+      // });
 
       const appointmentData = new AppointmentRequest({
         doctorId: doctor.id,
@@ -184,7 +184,7 @@ export default function BookAppointment() {
       appointmentService.createAppointment(appointmentData)
         .then(response => {
           toast.success('Appointment booked successfully!');
-          console.log("Appointment booked:", response.data);
+          // console.log("Appointment booked:", response.data);
           setTimeout(() => {
             navigate('/');
           }, 1500);

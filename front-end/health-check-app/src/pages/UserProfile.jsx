@@ -120,11 +120,11 @@ const UserProfile = () => {
         </div>
 
         {/* Edit Button */}
-        <div>
-          <button className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition duration-200">
-            Edit Profile
-          </button>
-        </div>
+        {/*<div>*/}
+        {/*  <button className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition duration-200">*/}
+        {/*    Edit Profile*/}
+        {/*  </button>*/}
+        {/*</div>*/}
       </div>
     </div>
   );

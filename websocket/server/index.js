@@ -24,7 +24,7 @@ app.get('/health', (req, res) => {
   res.status(200).send('OK');
 });
 
-const rooms = {}; // rooms -> { users: [{userId: , userName: }, {userId: , userName: }] }
+const rooms = {}; // {rooms -> { users: [{userId: , userName: }, {userId: , userName: }] }}
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);

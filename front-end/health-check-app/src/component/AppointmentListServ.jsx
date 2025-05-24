@@ -22,7 +22,7 @@ const AppointmentListServ = () => {
         }
 
         const parsedUser = JSON.parse(storedUser);
-        console.log("User from localStorage:", parsedUser.user);
+        // console.log("User from localStorage:", parsedUser.user);
 
         // Fetch complete user details using ID from localStorage
         const userResponse = await appointmentService.getUserById(parsedUser.user.id);

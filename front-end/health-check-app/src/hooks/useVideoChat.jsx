@@ -25,7 +25,7 @@ export function useVideoChat(roomId, userId, userName) {
   // const SOCKET_SERVER_URL = import.meta.env.VITE_BACKEND_URL || 'http://192.168.49.2:30700/socket.io';
   // const SOCKET_SERVER_URL = window.location.origin;
 
-  console.log(SOCKET_SERVER_URL);
+  // console.log(SOCKET_SERVER_URL);
 
   // Initialize socket connection
   useEffect(() => {
@@ -90,7 +90,7 @@ export function useVideoChat(roomId, userId, userName) {
 
   // Handle when another user connects
   const handleUserConnected = async (newUserId, userName) => {
-    console.log('User connected:', newUserId, userName);
+    // console.log('User connected:', newUserId, userName);
     setRemoteUserId(newUserId);
     setMessage('Another participant joined. Setting up connection...');
 

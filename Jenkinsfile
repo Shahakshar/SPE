@@ -5,7 +5,7 @@ pipeline {
         GITHUB_CRED_ID = 'GITHUB_CRED'
         DOCKERHUB_CRED_ID = 'docker-hub-credentials'
         GITHUB_REPO_URL = 'https://github.com/Shahakshar/SPE.git'
-        DEV_EMAIL = 'omkar7v2@gmail.com'
+        DEV_EMAIL = 'akshau0123@gmail.com'
 
         DOCKER_USER = 'akdev6298'
         IMAGE_TAG = "latest"
@@ -14,6 +14,8 @@ pipeline {
         AUTH_IMAGE = "${DOCKER_USER}/authenticationandauthorizationmicroservice:${IMAGE_TAG}"
         GATEWAY_IMAGE = "${DOCKER_USER}/gateway-service:${IMAGE_TAG}"
         USER_IMAGE = "${DOCKER_USER}/user-service:${IMAGE_TAG}"
+        FRONTEND_IMAGE = "${DOCKER_USER}/frontend-app:${IMAGE_TAG}"
+        WEBSOCKET_IMAGE = "${DOCKER_USER}/websocket:${IMAGE_TAG}"
     }
 
     stages {
@@ -25,7 +27,7 @@ pipeline {
             }
         }
 
-        /* 
+
         stage('Prepare Maven Wrapper') {
             steps {
                 script {
@@ -78,6 +80,12 @@ pipeline {
                     dir('user-service') {
                         sh "docker build -t ${USER_IMAGE} ."
                     }
+                    dir('front-end/health-check-app') {
+                        sh "docker build -t ${FRONTEND_IMAGE} ."
+                    }
+                    dir('websocket') {
+                        sh "docker build -t ${WEBSOCKET_IMAGE} ."
+                    }
                 }
             }
         }
@@ -90,11 +98,12 @@ pipeline {
                         sh "docker push ${AUTH_IMAGE}"
                         sh "docker push ${GATEWAY_IMAGE}"
                         sh "docker push ${USER_IMAGE}"
+                        sh "docker push ${FRONTEND_IMAGE}"
+                        sh "docker push ${WEBSOCKET_IMAGE}"
                     }
                 }
             }
         }
-        */
 
         stage('Deploy with Ansible') {
             steps {

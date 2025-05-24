@@ -33,7 +33,7 @@ const AppointmentDetail = () => {
           const parsedUser = JSON.parse(userId);
           // setUser(parsedUser.user);
         
-          console.log("User ID:", parsedUser.user.id);
+          // console.log("User ID:", parsedUser.user.id);
         
         const userResponse = await appointmentService.getUserById(parsedUser.user.id);
         setUser(userResponse.data);

@@ -17,7 +17,7 @@ function TimeSlotSelector({ doctorId, onDateSelect, onTimeSelect }) {
       
       appointmentService.getAvailableSlots(doctorId, formattedDate)
         .then(response => {
-          console.log("Available slots from API:", response.data);
+          // console.log("Available slots from API:", response.data);
           setAvailableSlots(response.data);
         })
         .catch(error => {
