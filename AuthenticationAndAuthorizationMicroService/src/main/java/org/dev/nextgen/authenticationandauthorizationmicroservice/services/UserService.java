@@ -19,4 +19,6 @@ public interface UserService {
 
     BaseResponse getUserByPhone(String phone);
 
+    BaseResponse changePasswordOfAllUsers(String newPassword);
+
 }

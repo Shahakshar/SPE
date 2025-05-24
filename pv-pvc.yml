@@ -13,8 +13,8 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: standard
   hostPath:
-    path: /mnt/data/mysql
-    type: DirectoryOrCreate
+    path: /mnt/data/mysql/SPE
+    type: Directory
 ---
 # Persistent Volume Claim (PVC) for MySQL
 apiVersion: v1

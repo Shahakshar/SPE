@@ -41,5 +41,11 @@ public class AuthController {
 
         return ResponseEntity.status(HttpStatusCode.valueOf(Integer.parseInt(baseResponse.getStatus()))).body(baseResponse);
     }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<BaseResponse> updatePassword(@RequestParam String newPassword) {
+        BaseResponse response = userService.changePasswordOfAllUsers(newPassword);
+        return ResponseEntity.status(HttpStatusCode.valueOf(Integer.parseInt(response.getStatus()))).body(response);
+    }
 }
 

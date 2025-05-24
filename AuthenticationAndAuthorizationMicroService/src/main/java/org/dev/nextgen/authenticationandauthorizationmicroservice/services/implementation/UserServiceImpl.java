@@ -97,6 +97,8 @@ public class UserServiceImpl implements UserService {
         return new BaseResponse("Login successful", "200", "OK", loginResponse);
     }
 
+
+
     @Override
     public BaseResponse getAllUsers() {
         return null;
@@ -123,6 +125,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseResponse getUserByPhone(String phone) {
         return null;
+    }
+
+    @Override
+    public BaseResponse changePasswordOfAllUsers(String newPassword) {
+        userRepository.updateAllUserPasswords(passwordEncoder.encode(newPassword));
+
+        return new BaseResponse("Password updated successfully", "200", null, null);
     }
 
     private BaseResponse checkUserParameters(RegisterRequest request) {
