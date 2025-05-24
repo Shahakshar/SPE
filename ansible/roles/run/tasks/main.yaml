@@ -1,34 +1,13 @@
 - name: Print calculated path
   debug:
     msg: "My calculated chdir path: {{ playbook_dir | dirname }}"
+    
 - name: Create namespace for SPE
   command: kubectl apply -f namespace-spe.yml --kubeconfig=/home/akshar/.kube/config
   args:
     chdir: "{{ playbook_dir | dirname }}"
   register: namespace_output
   become: yes
-
-- name: Claim Persistent Volume for MySQL
-  command: kubectl apply -f pv-pvc.yml --kubeconfig=/home/akshar/.kube/config
-  args:
-    chdir: "{{ playbook_dir | dirname }}"
-  register: pv_pvc_output
-  become: yes
-
-- name: Apply MySQL deployment
-  command: kubectl apply -f mysql-deployment.yml --kubeconfig=/home/akshar/.kube/config
-  args:
-    chdir: "{{ playbook_dir | dirname }}"
-  register: mysql_output
-  become: yes
-
-- name: Show MySQL apply output
-  debug:
-    var: mysql_output.stdout_lines
-
-- name: Wait for MySQL to stabilize
-  pause:
-    seconds: 90
 
 - name: Apply Config Map for frontend and for microservices
   command: kubectl apply -f spe-configmap.yml --kubeconfig=/home/akshar/.kube/config
