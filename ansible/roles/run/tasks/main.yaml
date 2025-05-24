@@ -1,3 +1,10 @@
+- name: Create namespace for SPE
+  command: kubectl apply -f namespace-spe.yml --kubeconfig=/home/akshar/.kube/config
+  args:
+    chdir: "{{ playbook_dir | dirname }}"
+  register: namespace_output
+  become: yes
+
 - name: Print calculated path
   debug:
     msg: "My calculated chdir path: {{ playbook_dir | dirname }}"
