@@ -24,7 +24,12 @@ spec:
                 configMapKeyRef:
                   name: app-config
                   key: allowed.origins
-
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: health,info,prometheus
+            - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+              value: "true"
+            - name: MANAGEMENT_METRICS_WEB_SERVER_REQUEST_ENABLED
+              value: "true"
 ---
 apiVersion: v1
 kind: Service
