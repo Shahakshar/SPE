@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
             user.setImageUrl(request.getImageUrl());
             user.setExpertise(request.getExpertise());
             user.setAvailable(request.isAvailable());
-            user.setRating(0.0);
+            user.setRating(4.0);
             user.setHourlyRate(request.getHourlyRate());
         } else {
             user.setDescription(null);
@@ -99,21 +99,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
-    @Override
-    public BaseResponse getAllUsers() {
-        return null;
-    }
-
-    @Override
-    public BaseResponse updateUser(String email, RegisterRequest request) {
-        return null;
-    }
-
-    @Override
-    public BaseResponse deleteUser(String email) {
-        return null;
-    }
 
     @Override
     public BaseResponse getUserByEmail(String email) {

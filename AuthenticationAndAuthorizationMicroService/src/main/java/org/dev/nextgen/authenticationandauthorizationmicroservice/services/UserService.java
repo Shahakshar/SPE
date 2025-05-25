@@ -9,12 +9,6 @@ public interface UserService {
 
     BaseResponse authenticate(String email, String password);
 
-    BaseResponse getAllUsers();
-
-    BaseResponse updateUser(String email, RegisterRequest request);
-
-    BaseResponse deleteUser(String email);
-
     BaseResponse getUserByEmail(String email);
 
     BaseResponse getUserByPhone(String phone);

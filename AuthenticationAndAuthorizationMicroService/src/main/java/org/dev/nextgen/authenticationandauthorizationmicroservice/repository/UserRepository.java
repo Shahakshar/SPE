@@ -13,12 +13,6 @@ public interface UserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findByEmail(String email);
 
-    @Query("SELECT MIN(u.id) FROM User u")
-    Long findMinId();
-
-    @Query("SELECT MAX(u.id) FROM User u")
-    Long findMaxId();
-
     @Modifying
     @Query("UPDATE User u SET u.password = ?1")
     void updateAllUserPasswords(String newPassword);

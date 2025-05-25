@@ -60,38 +60,5 @@ public class MeetingRoomServiceImplementation implements MeetingRoomService {
                 .orElse(null);
     }
 
-    @Override
-    public List<MeetingRoom> getMeetingRoomsByDoctorId(Long doctorId) {
-        return meetingRoomRepository.findByDoctorId(doctorId);
-    }
 
-    @Override
-    public List<MeetingRoom> getMeetingRoomsByPatientId(Long patientId) {
-        return meetingRoomRepository.findByPatientId(patientId);
-    }
-
-    @Override
-    public List<MeetingRoom> getActiveMeetingRoomsForDoctor(Long doctorId) {
-        LocalDateTime now = LocalDateTime.now();
-        return meetingRoomRepository.findByDoctorId(doctorId).stream()
-                .filter(room -> room.getIsActive() && room.getValidUntil().isAfter(now))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<MeetingRoom> getActiveMeetingRoomsForPatient(Long patientId) {
-        LocalDateTime now = LocalDateTime.now();
-        return meetingRoomRepository.findByPatientId(patientId).stream()
-                .filter(room -> room.getIsActive() && room.getValidUntil().isAfter(now))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public void deactivateMeetingRoom(String roomCode) {
-        MeetingRoom meetingRoom = getMeetingRoomByRoomCode(roomCode);
-        if (meetingRoom != null) {
-            meetingRoom.setIsActive(false);
-            meetingRoomRepository.save(meetingRoom);
-        }
-    }
 }

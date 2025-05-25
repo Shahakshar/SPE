@@ -54,23 +54,4 @@ public class JwtUtil {
         }
     }
 
-    public String refreshToken(String token) {
-        try {
-            Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-            String email = Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getSubject();
-            User user = new User(); // Fetch user from database using email
-            return generateToken(user);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public long getExpirationTime() {
-        return EXPIRATION_TIME;
-    }
 }

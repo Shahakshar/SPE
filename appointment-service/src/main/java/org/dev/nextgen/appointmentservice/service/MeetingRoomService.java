@@ -9,9 +9,4 @@ public interface MeetingRoomService {
     MeetingRoom createMeetingRoom(Appointment appointment);
     MeetingRoom getMeetingRoomByRoomCode(String roomCode);
     MeetingRoom getMeetingRoomByAppointmentId(Long appointmentId);
-    List<MeetingRoom> getMeetingRoomsByDoctorId(Long doctorId);
-    List<MeetingRoom> getMeetingRoomsByPatientId(Long patientId);
-    List<MeetingRoom> getActiveMeetingRoomsForDoctor(Long doctorId);
-    List<MeetingRoom> getActiveMeetingRoomsForPatient(Long patientId);
-    void deactivateMeetingRoom(String roomCode);
 }
